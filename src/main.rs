@@ -4,6 +4,7 @@ use std::fmt;
 enum TokenType {
     Integer(i32),
     Plus,
+    Minus,
     EOF,
 }
 
@@ -14,6 +15,7 @@ impl fmt::Display for TokenType {
         let output = match self {
             Integer(value) => format!("Integer, {}", value),
             Plus => "Plus".into(),
+            Minus => "Minus".into(),
             EOF => "EOF".into(),
         };
         write!(f, "{}", output)
@@ -59,9 +61,17 @@ impl Interpreter {
                     token_type: Integer(current_char.to_digit(10).unwrap() as i32),
                 })
             }
-            char if char == '+' => {
+            ' ' => {
+                self.position += 1;
+                return self.get_next_token();
+            }
+            '+' => {
                 self.position += 1;
                 Some(Token { token_type: Plus })
+            }
+            '-' => {
+                self.position += 1;
+                Some(Token { token_type: Minus })
             }
             _ => panic!(format!("Invalid token found: {}", current_char)),
         }
@@ -78,6 +88,7 @@ impl Interpreter {
         self.current_token = self.get_next_token();
         let mut left = 0;
         let mut right = 0;
+        let mut operator = "unknown";
 
         let token = self.clone().current_token.unwrap();
         if let Integer(value) = token.token_type {
@@ -87,6 +98,10 @@ impl Interpreter {
 
         let token = self.clone().current_token.unwrap();
         if token.token_type == Plus {
+            operator = "plus";
+            self.eat(token);
+        } else if token.token_type == Minus {
+            operator = "minus";
             self.eat(token);
         }
 
@@ -95,12 +110,17 @@ impl Interpreter {
             right = value;
             self.eat(token);
         }
-        left + right
+
+        match operator.as_ref() {
+            "plus" => left + right,
+            "minus" => left - right,
+            _ => panic!("Unknown operator encountered!"),
+        }
     }
 }
 
 fn main() {
-    let mut interpreter = Interpreter::new("4+2".into());
+    let mut interpreter = Interpreter::new("4 - 7".into());
     let result = interpreter.expr();
 
     println!("{}", result);
