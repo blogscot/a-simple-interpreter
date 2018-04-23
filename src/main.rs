@@ -38,4 +38,12 @@ mod tests {
         assert_eq!(result, 200);
     }
 
+    #[test]
+    fn subtract_multiple_digit_numbers() {
+        let mut interpreter = Interpreter::new("1234 - 134".into());
+        let result = interpreter.expr();
+
+        assert_eq!(result, 1100);
+    }
+
 }

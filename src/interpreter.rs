@@ -17,7 +17,8 @@ impl Interpreter {
     }
   }
   fn get_next_token(&mut self) -> Option<Token> {
-    if self.position > self.text.len() - 1 {
+    let end_of_input = self.text.len() - 1;
+    if self.position > end_of_input {
       return Some(Token { token_type: EOF });
     }
 
@@ -26,7 +27,7 @@ impl Interpreter {
       char if char.is_digit(10) => {
         let mut digits = String::new();
         while current_char.is_digit(10) {
-          if self.position == self.text.len() - 1 {
+          if self.position == end_of_input {
             digits.push(current_char);
             break;
           }
