@@ -31,7 +31,7 @@ impl Interpreter {
       }
       ' ' => {
         self.position += 1;
-        return self.get_next_token();
+        self.get_next_token()
       }
       '+' => {
         self.position += 1;
@@ -44,42 +44,47 @@ impl Interpreter {
       _ => panic!(format!("Invalid token found: {}", current_char)),
     }
   }
-  fn eat(&mut self, token: Token) {
-    let current_token = self.clone().current_token.unwrap();
+  fn get_current_token(&self) -> Token {
+    self.clone().current_token.unwrap()
+  }
+  ///
+  /// Verifies the token type matches the current token type.
+  /// If valid the next token is saved.
+  ///
+  fn consume(&mut self, token: Token) {
+    let current_token = self.get_current_token();
     if current_token.token_type == token.token_type {
       self.current_token = self.get_next_token();
     } else {
-      panic!("Token error: eat!")
+      panic!("Token error: next!")
     }
   }
   pub fn expr(&mut self) -> i32 {
-    self.current_token = self.get_next_token();
     let mut left = 0;
     let mut right = 0;
     let mut operator = "unknown";
+    self.current_token = self.get_next_token();
+    let mut token = self.get_current_token();
 
-    let token = self.clone().current_token.unwrap();
     if let Integer(value) = token.token_type {
       left = value;
-      self.eat(token);
+      self.consume(token);
     }
-
-    let token = self.clone().current_token.unwrap();
+    token = self.get_current_token();
     if token.token_type == Plus {
       operator = "plus";
-      self.eat(token);
+      self.consume(token);
     } else if token.token_type == Minus {
       operator = "minus";
-      self.eat(token);
+      self.consume(token);
     }
-
-    let token = self.clone().current_token.unwrap();
+    token = self.get_current_token();
     if let Integer(value) = token.token_type {
       right = value;
-      self.eat(token);
+      self.consume(token);
     }
 
-    match operator.as_ref() {
+    match operator {
       "plus" => left + right,
       "minus" => left - right,
       _ => panic!("Unknown operator encountered!"),
