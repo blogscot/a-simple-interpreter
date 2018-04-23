@@ -21,12 +21,21 @@ impl Interpreter {
       return Some(Token { token_type: EOF });
     }
 
-    let current_char = self.text.as_bytes()[self.position] as char;
+    let mut current_char = self.text.as_bytes()[self.position] as char;
     match current_char {
       char if char.is_digit(10) => {
-        self.position += 1;
+        let mut digits = String::new();
+        while current_char.is_digit(10) {
+          if self.position == self.text.len() - 1 {
+            digits.push(current_char);
+            break;
+          }
+          digits.push(current_char);
+          self.position += 1;
+          current_char = self.text.as_bytes()[self.position] as char;
+        }
         Some(Token {
-          token_type: Integer(current_char.to_digit(10).unwrap() as i32),
+          token_type: Integer(digits.parse::<i32>().unwrap()),
         })
       }
       ' ' => {

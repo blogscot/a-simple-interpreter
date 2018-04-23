@@ -30,4 +30,12 @@ mod tests {
         assert_eq!(result, -3);
     }
 
+    #[test]
+    fn add_multiple_digit_numbers() {
+        let mut interpreter = Interpreter::new("101 + 99".into());
+        let result = interpreter.expr();
+
+        assert_eq!(result, 200);
+    }
+
 }
