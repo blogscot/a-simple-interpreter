@@ -32,16 +32,11 @@ impl Interpreter {
       self.advance()
     }
   }
-  fn integer(&mut self, mut current_char: char) -> Option<Token> {
+  fn integer(&mut self) -> Option<Token> {
     let mut digits = String::new();
-    while current_char.is_digit(10) {
-      if self.position == self.text.len() - 1 {
-        digits.push(current_char);
-        break;
-      }
-      digits.push(current_char);
+    while self.current_char != None && self.current_char.unwrap().is_digit(10) {
+      digits.push(self.current_char.unwrap());
       self.advance();
-      current_char = self.current_char.unwrap();
     }
     Some(Token {
       token_type: Integer(digits.parse::<i32>().unwrap()),
@@ -54,7 +49,7 @@ impl Interpreter {
           self.skip_whitespace();
           continue;
         }
-        char if char.is_digit(10) => return self.integer(char),
+        char if char.is_digit(10) => self.integer(),
         '+' => {
           self.advance();
           Some(Token { token_type: Plus })
