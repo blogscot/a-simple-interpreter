@@ -21,8 +21,7 @@ impl Interpreter {
     if self.position > end_of_input {
       return Some(Token { token_type: EOF });
     }
-
-    let mut current_char = self.text.as_bytes()[self.position] as char;
+    let mut current_char = self.get_char(self.position);
     match current_char {
       char if char.is_digit(10) => {
         let mut digits = String::new();
@@ -33,7 +32,7 @@ impl Interpreter {
           }
           digits.push(current_char);
           self.position += 1;
-          current_char = self.text.as_bytes()[self.position] as char;
+          current_char = self.get_char(self.position);
         }
         Some(Token {
           token_type: Integer(digits.parse::<i32>().unwrap()),
@@ -51,17 +50,30 @@ impl Interpreter {
         self.position += 1;
         Some(Token { token_type: Minus })
       }
+      '*' => {
+        self.position += 1;
+        Some(Token {
+          token_type: Multiply,
+        })
+      }
+      '/' => {
+        self.position += 1;
+        Some(Token { token_type: Divide })
+      }
       _ => panic!(format!("Invalid token found: {}", current_char)),
     }
   }
   fn get_current_token(&self) -> Token {
     self.clone().current_token.unwrap()
   }
+  fn get_char(&self, position: usize) -> char {
+    self.text.as_bytes()[position] as char
+  }
   ///
   /// Verifies the token type matches the current token type.
   /// If valid the next token is saved.
   ///
-  fn consume(&mut self, token: Token) {
+  fn consume(&mut self, token: &Token) {
     let current_token = self.get_current_token();
     if current_token.token_type == token.token_type {
       self.current_token = self.get_next_token();
@@ -72,31 +84,28 @@ impl Interpreter {
   pub fn expr(&mut self) -> i32 {
     let mut left = 0;
     let mut right = 0;
-    let mut operator = "unknown";
     self.current_token = self.get_next_token();
     let mut token = self.get_current_token();
 
     if let Integer(value) = token.token_type {
       left = value;
-      self.consume(token);
+      self.consume(&token);
     }
     token = self.get_current_token();
-    if token.token_type == Plus {
-      operator = "plus";
-      self.consume(token);
-    } else if token.token_type == Minus {
-      operator = "minus";
-      self.consume(token);
-    }
+    let operator = token.clone().token_type;
+    self.consume(&token);
+
     token = self.get_current_token();
     if let Integer(value) = token.token_type {
       right = value;
-      self.consume(token);
+      self.consume(&token);
     }
 
     match operator {
-      "plus" => left + right,
-      "minus" => left - right,
+      Plus => left + right,
+      Minus => left - right,
+      Multiply => left * right,
+      Divide => left / right,
       _ => panic!("Unknown operator encountered!"),
     }
   }

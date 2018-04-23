@@ -31,6 +31,22 @@ mod tests {
     }
 
     #[test]
+    fn multiply_two_single_digit_numbers() {
+        let mut interpreter = Interpreter::new("4 * 7".into());
+        let result = interpreter.expr();
+
+        assert_eq!(result, 28);
+    }
+
+    #[test]
+    fn divide_two_single_digit_numbers() {
+        let mut interpreter = Interpreter::new("10 / 3".into());
+        let result = interpreter.expr();
+
+        assert_eq!(result, 3);
+    }
+
+    #[test]
     fn add_multiple_digit_numbers() {
         let mut interpreter = Interpreter::new("101 + 99".into());
         let result = interpreter.expr();
