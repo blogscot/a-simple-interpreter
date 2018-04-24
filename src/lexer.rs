@@ -71,3 +71,46 @@ impl Lexer {
     Some(Token { token_type: EOF })
   }
 }
+
+#[cfg(test)]
+mod tests {
+  use super::*;
+
+  fn build_token(value: i32) -> Token {
+    Token {
+      token_type: Integer(value),
+    }
+}
+  fn build_token(value: i32) -> Token {
+    Token {
+      token_type: Integer(value),
+    }
+  }
+
+  #[test]
+  fn add_two_single_digit_numbers() {
+    let mut lexer = Lexer::new("4 + 7".into());
+    let four = build_token(4);
+    let seven = build_token(7);
+    let plus = Token { token_type: Plus };
+
+    assert_eq!(lexer.get_next_token().unwrap(), four);
+    assert_eq!(lexer.get_next_token().unwrap(), plus);
+    assert_eq!(lexer.get_next_token().unwrap(), seven);
+  }
+
+  #[test]
+  fn multiply_two_single_digit_numbers() {
+    let mut lexer = Lexer::new("4 * 7".into());
+    let four = build_token(4);
+    let seven = build_token(7);
+    let multiply = Token {
+      token_type: Multiply,
+    };
+
+    assert_eq!(lexer.get_next_token().unwrap(), four);
+    assert_eq!(lexer.get_next_token().unwrap(), multiply);
+    assert_eq!(lexer.get_next_token().unwrap(), seven);
+  }
+
+}
