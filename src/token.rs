@@ -7,6 +7,8 @@ pub enum TokenType {
   Minus,
   Multiply,
   Divide,
+  LParen,
+  RParen,
   EOF,
 }
 
@@ -18,6 +20,8 @@ impl fmt::Display for TokenType {
       TokenType::Minus => "Minus".into(),
       TokenType::Multiply => "Multiply".into(),
       TokenType::Divide => "Divide".into(),
+      TokenType::LParen => "(".into(),
+      TokenType::RParen => ")".into(),
       TokenType::EOF => "EOF".into(),
     };
     write!(f, "{}", output)

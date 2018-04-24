@@ -44,6 +44,11 @@ impl Interpreter {
     if let Integer(value) = token_type {
       self.consume(&token_type);
       value
+    } else if let LParen = token_type {
+      self.consume(&token_type);
+      let result = self.expr();
+      self.consume(&TokenType::RParen);
+      result
     } else {
       panic!(format!("Invalid factor: {}", token_type));
     }
@@ -158,5 +163,13 @@ mod tests {
     let result = interpreter.expr();
 
     assert_eq!(result, 10);
+  }
+
+  #[test]
+  fn evaluate_multiterm_expression_contain_parens() {
+    let mut interpreter = Interpreter::new("6 * (3 + 7) / 2".into());
+    let result = interpreter.expr();
+
+    assert_eq!(result, 30);
   }
 }
