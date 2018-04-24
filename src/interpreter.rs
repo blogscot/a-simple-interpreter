@@ -11,7 +11,7 @@ pub struct Interpreter {
 }
 
 impl Interpreter {
-  pub fn new(text: String) -> Self {
+  pub fn new(text: &str) -> Self {
     let mut lexer = Lexer::new(&text);
     let current_token = lexer.get_next_token();
 
@@ -24,7 +24,7 @@ impl Interpreter {
     self.clone().current_token.unwrap()
   }
   fn get_token_type(&self) -> TokenType {
-    self.get_current_token().token_type
+    self.get_current_token().get_type()
   }
   ///
   /// Verifies the token type matches the current token type.
@@ -32,7 +32,7 @@ impl Interpreter {
   ///
   fn consume(&mut self, token_type: &TokenType) {
     let current_token = self.get_current_token();
-    if current_token.token_type == *token_type {
+    if current_token.get_type() == *token_type {
       self.current_token = self.lexer.get_next_token();
     } else {
       panic!(format!("consume: token error: {}", current_token));

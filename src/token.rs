@@ -25,12 +25,19 @@ impl fmt::Display for TokenType {
 }
 
 #[derive(Clone, Debug, PartialEq)]
-pub struct Token {
-  pub token_type: TokenType,
+pub struct Token(TokenType);
+
+impl Token {
+  pub fn new(token_type: TokenType) -> Self {
+    Token(token_type)
+  }
+  pub fn get_type(&self) -> TokenType {
+    self.0.clone()
+  }
 }
 
 impl fmt::Display for Token {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    write!(f, "Token({})", self.token_type)
+    write!(f, "Token({})", self.0)
   }
 }

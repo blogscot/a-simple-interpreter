@@ -1,4 +1,5 @@
 use token::Token;
+use token::TokenType;
 use token::TokenType::*;
 
 #[derive(Clone)]
@@ -10,10 +11,11 @@ pub struct Lexer {
 
 impl Lexer {
   pub fn new(text: &str) -> Self {
+    let chars: Vec<char> = text.chars().collect();
     Lexer {
       text: text.to_string(),
       position: 0,
-      current_char: Some(text.as_bytes()[0] as char),
+      current_char: Some(chars[0]),
     }
   }
   fn advance(&mut self) {
@@ -44,31 +46,27 @@ impl Lexer {
           self.skip_whitespace();
           continue;
         }
-        char if char.is_digit(10) => Some(Token {
-          token_type: Integer(self.integer()),
-        }),
+        char if char.is_digit(10) => Some(Token::new(Integer(self.integer()))),
         '+' => {
           self.advance();
-          Some(Token { token_type: Plus })
+          Some(Token::new(Plus))
         }
         '-' => {
           self.advance();
-          Some(Token { token_type: Minus })
+          Some(Token::new(Minus))
         }
         '*' => {
           self.advance();
-          Some(Token {
-            token_type: Multiply,
-          })
+          Some(Token::new(Multiply))
         }
         '/' => {
           self.advance();
-          Some(Token { token_type: Divide })
+          Some(Token::new(Divide))
         }
         _ => panic!("Unknown token found!"),
       };
     }
-    Some(Token { token_type: EOF })
+    Some(Token::new(TokenType::EOF))
   }
 }
 
@@ -77,9 +75,7 @@ mod tests {
   use super::*;
 
   fn build_token(value: i32) -> Token {
-    Token {
-      token_type: Integer(value),
-    }
+    Token::new(Integer(value))
   }
 
   #[test]
@@ -87,7 +83,7 @@ mod tests {
     let mut lexer = Lexer::new("4 + 7".into());
     let four = build_token(4);
     let seven = build_token(7);
-    let plus = Token { token_type: Plus };
+    let plus = Token::new(Plus);
 
     assert_eq!(lexer.get_next_token().unwrap(), four);
     assert_eq!(lexer.get_next_token().unwrap(), plus);
@@ -99,9 +95,7 @@ mod tests {
     let mut lexer = Lexer::new("4 * 7".into());
     let four = build_token(4);
     let seven = build_token(7);
-    let multiply = Token {
-      token_type: Multiply,
-    };
+    let multiply = Token::new(Multiply);
 
     assert_eq!(lexer.get_next_token().unwrap(), four);
     assert_eq!(lexer.get_next_token().unwrap(), multiply);
