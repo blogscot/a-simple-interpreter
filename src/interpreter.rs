@@ -48,7 +48,7 @@ impl Interpreter {
       panic!(format!("Invalid factor: {}", token_type));
     }
   }
-  pub fn expr(&mut self) -> i32 {
+  fn term(&mut self) -> i32 {
     let mut result = self.factor();
 
     let mut token_type = self.get_token_type();
@@ -65,6 +65,23 @@ impl Interpreter {
     }
     result
   }
+  pub fn expr(&mut self) -> i32 {
+    let mut result = self.term();
+
+    let mut token_type = self.get_token_type();
+    while token_type == Plus || token_type == Minus {
+      token_type = self.get_token_type();
+
+      if token_type == Plus {
+        self.consume(&token_type);
+        result += self.term()
+      } else if token_type == Minus {
+        self.consume(&token_type);
+        result -= self.term()
+      }
+    }
+    result
+  }
 }
 
 #[cfg(test)]
@@ -72,7 +89,6 @@ mod tests {
   use super::*;
 
   #[test]
-  #[ignore]
   fn add_two_single_digit_numbers() {
     let mut interpreter = Interpreter::new("4 + 7".into());
     let result = interpreter.expr();
@@ -81,7 +97,6 @@ mod tests {
   }
 
   #[test]
-  #[ignore]
   fn subtract_two_single_digit_numbers() {
     let mut interpreter = Interpreter::new("4 - 7".into());
     let result = interpreter.expr();
@@ -106,7 +121,6 @@ mod tests {
   }
 
   #[test]
-  #[ignore]
   fn add_multiple_digit_numbers() {
     let mut interpreter = Interpreter::new("101 + 99".into());
     let result = interpreter.expr();
@@ -115,7 +129,6 @@ mod tests {
   }
 
   #[test]
-  #[ignore]
   fn subtract_multiple_digit_numbers() {
     let mut interpreter = Interpreter::new("1234 - 134".into());
     let result = interpreter.expr();
@@ -124,7 +137,6 @@ mod tests {
   }
 
   #[test]
-  #[ignore]
   fn add_multiple_numbers() {
     let mut interpreter = Interpreter::new("1 + 2 + 3 + 4 + 5".into());
     let result = interpreter.expr();
@@ -133,7 +145,6 @@ mod tests {
   }
 
   #[test]
-  #[ignore]
   fn add_and_subtract_multiple_numbers() {
     let mut interpreter = Interpreter::new("1 + 2 - 3 + 4 - 5".into());
     let result = interpreter.expr();
