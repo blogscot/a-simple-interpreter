@@ -63,6 +63,14 @@ impl Lexer {
           self.advance();
           Some(Token::new(Divide))
         }
+        '(' => {
+          self.advance();
+          Some(Token::new(LParen))
+        }
+        ')' => {
+          self.advance();
+          Some(Token::new(RParen))
+        }
         _ => panic!("Unknown token found!"),
       };
     }
@@ -81,25 +89,30 @@ mod tests {
   #[test]
   fn add_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 + 7".into());
-    let four = build_token(4);
-    let seven = build_token(7);
-    let plus = Token::new(Plus);
 
-    assert_eq!(lexer.get_next_token().unwrap(), four);
-    assert_eq!(lexer.get_next_token().unwrap(), plus);
-    assert_eq!(lexer.get_next_token().unwrap(), seven);
+    assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(Plus));
+    assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
   }
 
   #[test]
   fn multiply_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 * 7".into());
-    let four = build_token(4);
-    let seven = build_token(7);
-    let multiply = Token::new(Multiply);
 
-    assert_eq!(lexer.get_next_token().unwrap(), four);
-    assert_eq!(lexer.get_next_token().unwrap(), multiply);
-    assert_eq!(lexer.get_next_token().unwrap(), seven);
+    assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(Multiply));
+    assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
+  }
+
+  #[test]
+  fn lex_expression_in_parens() {
+    let mut lexer = Lexer::new("(4 - 7)".into());
+
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(LParen));
+    assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(Minus));
+    assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(RParen));
   }
 
 }
