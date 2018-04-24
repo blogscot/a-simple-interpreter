@@ -1,4 +1,5 @@
 mod interpreter;
+mod lexer;
 mod token;
 
 use interpreter::Interpreter;
