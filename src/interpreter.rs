@@ -85,29 +85,29 @@ impl Interpreter {
     if current_token.token_type == *token_type {
       self.current_token = self.get_next_token();
     } else {
-      panic!("Token error: next!")
+      panic!("consume: token error!")
+    }
+  }
+  fn term(&mut self) -> i32 {
+    let token = self.clone().current_token.unwrap();
+    match token.token_type {
+      Integer(value) => {
+        self.consume(&token.token_type);
+        value
+      }
+      _ => panic!(format!("Unexpected term found: {}", token.token_type)),
     }
   }
   pub fn expr(&mut self) -> i32 {
-    let mut left = 0;
-    let mut right = 0;
     self.current_token = self.get_next_token();
-    let mut token = self.get_current_token();
 
-    if let Integer(value) = token.token_type {
-      left = value;
-      self.consume(&token.token_type);
-    }
+    let left = self.term();
 
-    token = self.get_current_token();
+    let token = self.get_current_token();
     let operator = token.clone().token_type;
     self.consume(&token.token_type);
 
-    token = self.get_current_token();
-    if let Integer(value) = token.token_type {
-      right = value;
-      self.consume(&token.token_type);
-    }
+    let right = self.term();
 
     match operator {
       Plus => left + right,
