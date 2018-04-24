@@ -12,9 +12,12 @@ pub struct Interpreter {
 
 impl Interpreter {
   pub fn new(text: String) -> Self {
+    let mut lexer = Lexer::new(&text);
+    let current_token = lexer.get_next_token();
+
     Interpreter {
-      lexer: Lexer::new(text),
-      current_token: None,
+      lexer,
+      current_token,
     }
   }
   fn get_current_token(&self) -> Token {
@@ -35,38 +38,29 @@ impl Interpreter {
       panic!(format!("consume: token error: {}", current_token));
     }
   }
-  fn term(&mut self) -> i32 {
-    let token = self.clone().current_token.unwrap();
-    match token.token_type {
-      Integer(value) => {
-        self.consume(&token.token_type);
-        value
-      }
-      _ => panic!(format!("Unexpected term found: {}", token.token_type)),
+  fn factor(&mut self) -> i32 {
+    let token_type = self.get_token_type();
+
+    if let Integer(value) = token_type {
+      self.consume(&token_type);
+      value
+    } else {
+      panic!(format!("Invalid factor: {}", token_type));
     }
   }
   pub fn expr(&mut self) -> i32 {
-    // Get first token
-    self.current_token = self.lexer.get_next_token();
+    let mut result = self.factor();
 
-    let mut result = self.term();
     let mut token_type = self.get_token_type();
-    while token_type == Plus || token_type == Minus || token_type == Multiply
-      || token_type == Divide
-    {
+    while token_type == Multiply || token_type == Divide {
       token_type = self.get_token_type();
-      if token_type == Plus {
+
+      if token_type == Multiply {
         self.consume(&token_type);
-        result += self.term()
-      } else if token_type == Minus {
-        self.consume(&token_type);
-        result -= self.term()
-      } else if token_type == Multiply {
-        self.consume(&token_type);
-        result *= self.term()
+        result *= self.factor()
       } else if token_type == Divide {
         self.consume(&token_type);
-        result /= self.term()
+        result /= self.factor()
       }
     }
     result
@@ -78,6 +72,7 @@ mod tests {
   use super::*;
 
   #[test]
+  #[ignore]
   fn add_two_single_digit_numbers() {
     let mut interpreter = Interpreter::new("4 + 7".into());
     let result = interpreter.expr();
@@ -86,6 +81,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn subtract_two_single_digit_numbers() {
     let mut interpreter = Interpreter::new("4 - 7".into());
     let result = interpreter.expr();
@@ -110,6 +106,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn add_multiple_digit_numbers() {
     let mut interpreter = Interpreter::new("101 + 99".into());
     let result = interpreter.expr();
@@ -118,6 +115,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn subtract_multiple_digit_numbers() {
     let mut interpreter = Interpreter::new("1234 - 134".into());
     let result = interpreter.expr();
@@ -126,6 +124,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn add_multiple_numbers() {
     let mut interpreter = Interpreter::new("1 + 2 + 3 + 4 + 5".into());
     let result = interpreter.expr();
@@ -134,6 +133,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn add_and_subtract_multiple_numbers() {
     let mut interpreter = Interpreter::new("1 + 2 - 3 + 4 - 5".into());
     let result = interpreter.expr();
@@ -148,5 +148,4 @@ mod tests {
 
     assert_eq!(result, 10);
   }
-
 }

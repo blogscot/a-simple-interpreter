@@ -13,7 +13,7 @@ pub enum TokenType {
 impl fmt::Display for TokenType {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let output = match self {
-      TokenType::Integer(value) => format!("Integer, {}", value),
+      TokenType::Integer(value) => format!("Integer({})", value),
       TokenType::Plus => "Plus".into(),
       TokenType::Minus => "Minus".into(),
       TokenType::Multiply => "Multiply".into(),
@@ -24,7 +24,7 @@ impl fmt::Display for TokenType {
   }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq)]
 pub struct Token {
   pub token_type: TokenType,
 }

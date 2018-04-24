@@ -9,9 +9,9 @@ pub struct Lexer {
 }
 
 impl Lexer {
-  pub fn new(text: String) -> Self {
+  pub fn new(text: &str) -> Self {
     Lexer {
-      text: text.clone(),
+      text: text.to_string(),
       position: 0,
       current_char: Some(text.as_bytes()[0] as char),
     }
@@ -76,11 +76,6 @@ impl Lexer {
 mod tests {
   use super::*;
 
-  fn build_token(value: i32) -> Token {
-    Token {
-      token_type: Integer(value),
-    }
-}
   fn build_token(value: i32) -> Token {
     Token {
       token_type: Integer(value),
