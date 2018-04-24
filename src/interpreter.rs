@@ -76,6 +76,9 @@ impl Interpreter {
   fn get_current_token(&self) -> Token {
     self.clone().current_token.unwrap()
   }
+  fn get_token_type(&self) -> TokenType {
+    self.get_current_token().token_type
+  }
   ///
   /// Verifies the token type matches the current token type.
   /// If valid the next token is saved.
@@ -85,7 +88,7 @@ impl Interpreter {
     if current_token.token_type == *token_type {
       self.current_token = self.get_next_token();
     } else {
-      panic!("consume: token error!")
+      panic!(format!("consume: token error: {}", current_token));
     }
   }
   fn term(&mut self) -> i32 {
@@ -99,22 +102,29 @@ impl Interpreter {
     }
   }
   pub fn expr(&mut self) -> i32 {
+    // Get first token
     self.current_token = self.get_next_token();
 
-    let left = self.term();
-
-    let token = self.get_current_token();
-    let operator = token.clone().token_type;
-    self.consume(&token.token_type);
-
-    let right = self.term();
-
-    match operator {
-      Plus => left + right,
-      Minus => left - right,
-      Multiply => left * right,
-      Divide => left / right,
-      _ => panic!(format!("Unknown operator encountered! {}", operator)),
+    let mut result = self.term();
+    let mut token_type = self.get_token_type();
+    while token_type == Plus || token_type == Minus || token_type == Multiply
+      || token_type == Divide
+    {
+      token_type = self.get_token_type();
+      if token_type == Plus {
+        self.consume(&token_type);
+        result += self.term()
+      } else if token_type == Minus {
+        self.consume(&token_type);
+        result -= self.term()
+      } else if token_type == Multiply {
+        self.consume(&token_type);
+        result *= self.term()
+      } else if token_type == Divide {
+        self.consume(&token_type);
+        result /= self.term()
+      }
     }
+    result
   }
 }
