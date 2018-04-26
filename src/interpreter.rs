@@ -21,7 +21,7 @@ impl Interpreter {
     }
   }
   fn get_current_token(&self) -> Token {
-    self.clone().current_token.unwrap()
+    self.current_token.clone().unwrap()
   }
   fn get_token_type(&self) -> TokenType {
     self.get_current_token().get_type()
