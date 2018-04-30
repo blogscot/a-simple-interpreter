@@ -93,6 +93,7 @@ mod tests {
     assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
     assert_eq!(lexer.get_next_token().unwrap(), Token::new(Plus));
     assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(EOF));
   }
 
   #[test]
@@ -102,6 +103,7 @@ mod tests {
     assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
     assert_eq!(lexer.get_next_token().unwrap(), Token::new(Multiply));
     assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(EOF));
   }
 
   #[test]
@@ -113,6 +115,7 @@ mod tests {
     assert_eq!(lexer.get_next_token().unwrap(), Token::new(Minus));
     assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
     assert_eq!(lexer.get_next_token().unwrap(), Token::new(RParen));
+    assert_eq!(lexer.get_next_token().unwrap(), Token::new(EOF));
   }
 
 }
