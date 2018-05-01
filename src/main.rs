@@ -1,18 +1,15 @@
 #[macro_use]
 extern crate mopa;
 
+mod ast;
 mod lexer;
 mod node;
 mod parser;
 mod token;
 
-use node::Ast;
-use parser::Parser;
+use ast::Ast;
 
 fn main() {
-    let mut parser = Parser::new("82 + 2");
-    let nodes = parser.parse();
-    let ast = Ast::new(nodes);
-
+    let ast = Ast::new("82 + 2");
     println!("{}", ast.evaluate());
 }

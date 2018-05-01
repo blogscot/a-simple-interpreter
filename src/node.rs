@@ -24,26 +24,6 @@ pub trait NodeVisitor {
   fn visit_binop(&self, node: &BinOpNode) -> i32;
 }
 
-pub struct Ast {
-  pub root_node: Box<Node>,
-}
-
-impl Ast {
-  #[allow(dead_code)]
-  pub fn new(root_node: Box<Node>) -> Self {
-    Ast { root_node }
-  }
-  pub fn evaluate(&self) -> i32 {
-    self.accept(&Evaluator {})
-  }
-}
-
-impl Node for Ast {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
-    self.root_node.accept(visitor)
-  }
-}
-
 #[derive(Debug)]
 pub struct NumNode {
   pub value: i32,
