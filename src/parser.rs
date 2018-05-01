@@ -60,12 +60,9 @@ impl Parser {
 
     let mut token_type = self.get_token_type();
     while token_type == Multiply || token_type == Divide {
+      self.consume(&token_type);
+      node = Box::new(BinOpNode::new(node, self.factor(), token_type));
       token_type = self.get_token_type();
-
-      if token_type == Multiply || token_type == Divide {
-        self.consume(&token_type);
-        node = Box::new(BinOpNode::new(node, self.factor(), token_type));
-      }
     }
     node
   }
@@ -74,12 +71,9 @@ impl Parser {
 
     let mut token_type = self.get_token_type();
     while token_type == Plus || token_type == Minus {
+      self.consume(&token_type);
+      node = Box::new(BinOpNode::new(node, self.factor(), token_type));
       token_type = self.get_token_type();
-
-      if token_type == Plus || token_type == Minus {
-        self.consume(&token_type);
-        node = Box::new(BinOpNode::new(node, self.factor(), token_type));
-      }
     }
     node
   }
