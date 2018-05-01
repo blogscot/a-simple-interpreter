@@ -6,17 +6,17 @@ use lexer::Lexer;
 use node::{BinOpNode, Node, NumNode};
 
 #[derive(Clone)]
-pub struct Interpreter {
+pub struct Parser {
   lexer: Lexer,
   current_token: Option<Token>,
 }
 
-impl Interpreter {
+impl Parser {
   pub fn new(text: &str) -> Self {
     let mut lexer = Lexer::new(&text);
     let current_token = lexer.get_next_token();
 
-    Interpreter {
+    Parser {
       lexer,
       current_token,
     }
@@ -69,7 +69,7 @@ impl Interpreter {
     }
     node
   }
-  pub fn expr(&mut self) -> Box<Node> {
+  fn expr(&mut self) -> Box<Node> {
     let mut node = self.term();
 
     let mut token_type = self.get_token_type();
@@ -82,6 +82,9 @@ impl Interpreter {
       }
     }
     node
+  }
+  pub fn parse(&mut self) -> Box<Node> {
+    self.expr()
   }
 }
 
