@@ -1,12 +1,16 @@
+#[macro_use]
+extern crate mopa;
+
 mod interpreter;
 mod lexer;
+mod node;
 mod token;
 
 use interpreter::Interpreter;
 
 fn main() {
-    let mut interpreter = Interpreter::new("7 + 3 * (10 / (12 / (3 + 1) - 1))");
-    let result = interpreter.expr();
+    let mut interpreter = Interpreter::new("7 + 3");
+    interpreter.expr();
 
-    println!("{}", result);
+    // println!("{}", result);
 }
