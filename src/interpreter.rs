@@ -29,80 +29,60 @@ mod tests {
   #[test]
   fn add_two_single_digit_numbers() {
     let interpreter = Interpreter::new("4 + 7");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 11);
+    assert_eq!(interpreter.evaluate(), 11);
   }
 
   #[test]
   fn subtract_two_single_digit_numbers() {
     let interpreter = Interpreter::new("4 - 7");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, -3);
+    assert_eq!(interpreter.evaluate(), -3);
   }
 
   #[test]
   fn multiply_two_single_digit_numbers() {
     let interpreter = Interpreter::new("4 * 7");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 28);
+    assert_eq!(interpreter.evaluate(), 28);
   }
 
   #[test]
   fn divide_two_single_digit_numbers() {
     let interpreter = Interpreter::new("10 / 3");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 3);
+    assert_eq!(interpreter.evaluate(), 3);
   }
 
   #[test]
   fn add_multiple_digit_numbers() {
     let interpreter = Interpreter::new("101 + 99");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 200);
+    assert_eq!(interpreter.evaluate(), 200);
   }
 
   #[test]
   fn subtract_multiple_digit_numbers() {
     let interpreter = Interpreter::new("1234 - 134");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 1100);
+    assert_eq!(interpreter.evaluate(), 1100);
   }
 
   #[test]
   fn add_multiple_numbers() {
     let interpreter = Interpreter::new("1 + 2 + 3 + 4 + 5");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 15);
+    assert_eq!(interpreter.evaluate(), 15);
   }
 
   #[test]
   fn add_and_subtract_multiple_numbers() {
     let interpreter = Interpreter::new("1 + 2 - 3 + 4 - 5");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, -1);
+    assert_eq!(interpreter.evaluate(), -1);
   }
 
   #[test]
   fn muliply_and_divide_multiple_numbers() {
     let interpreter = Interpreter::new("10 * 20 / 2 / 10");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 10);
+    assert_eq!(interpreter.evaluate(), 10);
   }
 
   #[test]
   fn evaluate_multiterm_expression_contain_parens() {
     let interpreter = Interpreter::new("6 * (3 + 7) / 2");
-    let result = interpreter.evaluate();
-
-    assert_eq!(result, 30);
+    assert_eq!(interpreter.evaluate(), 30);
   }
 }
