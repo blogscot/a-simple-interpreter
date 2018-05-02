@@ -19,16 +19,6 @@ pub trait NodeVisitor {
   fn visit_unaryop(&self, node: &UnaryOpNode) -> i32;
 }
 
-pub fn evaluate(lhs: i32, rhs: i32, operator: TokenType) -> i32 {
-  match operator {
-    Plus => lhs + rhs,
-    Multiply => lhs * rhs,
-    Minus => lhs - rhs,
-    Divide => lhs / rhs,
-    _ => panic!("Unknown operator found: {}", operator),
-  }
-}
-
 pub struct Evaluator {}
 impl NodeVisitor for Evaluator {
   fn visit_num(&self, node: &NumNode) -> i32 {
@@ -43,7 +33,7 @@ impl NodeVisitor for Evaluator {
 
     let lhs = self.visit(left);
     let rhs = self.visit(right);
-    evaluate(lhs, rhs, operator.clone())
+    evaluate(lhs, rhs, &operator)
   }
   fn visit_unaryop(&self, node: &UnaryOpNode) -> i32 {
     let UnaryOpNode { operator, expr } = node;
@@ -52,5 +42,15 @@ impl NodeVisitor for Evaluator {
       Minus => -self.visit(expr),
       _ => panic!("Unexpected Unary Operator found: {}", operator),
     }
+  }
+}
+
+pub fn evaluate(lhs: i32, rhs: i32, operator: &TokenType) -> i32 {
+  match operator {
+    Plus => lhs + rhs,
+    Multiply => lhs * rhs,
+    Minus => lhs - rhs,
+    Divide => lhs / rhs,
+    _ => panic!("Unknown operator found: {}", operator),
   }
 }

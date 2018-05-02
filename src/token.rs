@@ -36,7 +36,7 @@ impl Token {
     Token(token_type)
   }
   pub fn get_type(&self) -> TokenType {
-    self.0.clone()
+    self.0
   }
 }
 
