@@ -81,17 +81,13 @@ impl Lexer {
 mod tests {
   use super::*;
 
-  fn build_token(value: i32) -> Token {
-    Integer(value)
-  }
-
   #[test]
   fn add_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 + 7".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
+    assert_eq!(lexer.get_next_token().unwrap(), Integer(4));
     assert_eq!(lexer.get_next_token().unwrap(), Plus);
-    assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
+    assert_eq!(lexer.get_next_token().unwrap(), Integer(7));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -99,9 +95,9 @@ mod tests {
   fn multiply_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 * 7".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
+    assert_eq!(lexer.get_next_token().unwrap(), Integer(4));
     assert_eq!(lexer.get_next_token().unwrap(), Multiply);
-    assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
+    assert_eq!(lexer.get_next_token().unwrap(), Integer(7));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -110,9 +106,9 @@ mod tests {
     let mut lexer = Lexer::new("(4 - 7)".into());
 
     assert_eq!(lexer.get_next_token().unwrap(), LParen);
-    assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
+    assert_eq!(lexer.get_next_token().unwrap(), Integer(4));
     assert_eq!(lexer.get_next_token().unwrap(), Minus);
-    assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
+    assert_eq!(lexer.get_next_token().unwrap(), Integer(7));
     assert_eq!(lexer.get_next_token().unwrap(), RParen);
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
