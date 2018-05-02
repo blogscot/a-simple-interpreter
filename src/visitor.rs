@@ -1,0 +1,65 @@
+use node::{BinOpNode, Node, NumNode};
+use token::TokenType;
+use token::TokenType::*;
+
+pub trait NodeVisitor {
+  fn visit(&self, node: &Box<Node>) -> i32 {
+    if node.is::<NumNode>() {
+      self.visit_num(node.downcast_ref().unwrap())
+    } else if node.is::<BinOpNode>() {
+      self.visit_binop(node.downcast_ref().unwrap())
+    } else {
+      panic!("Unknown node found!");
+    }
+  }
+  fn visit_num(&self, node: &NumNode) -> i32;
+  fn visit_binop(&self, node: &BinOpNode) -> i32;
+}
+
+pub fn evaluate(lhs: i32, rhs: i32, operator: TokenType) -> i32 {
+  match operator {
+    Plus => lhs + rhs,
+    Multiply => lhs * rhs,
+    Minus => lhs - rhs,
+    Divide => lhs / rhs,
+    _ => panic!("Unknown operator found: {}", operator),
+  }
+}
+
+#[allow(dead_code)]
+struct Printer {}
+impl NodeVisitor for Printer {
+  fn visit_num(&self, node: &NumNode) -> i32 {
+    node.value
+  }
+  fn visit_binop(&self, node: &BinOpNode) -> i32 {
+    let BinOpNode {
+      left,
+      right,
+      operator,
+    } = node;
+
+    let lhs = self.visit(left);
+    let rhs = self.visit(right);
+    println!("{} {} {}", lhs, operator, rhs);
+    evaluate(lhs, rhs, operator.clone())
+  }
+}
+
+pub struct Evaluator {}
+impl NodeVisitor for Evaluator {
+  fn visit_num(&self, node: &NumNode) -> i32 {
+    node.value
+  }
+  fn visit_binop(&self, node: &BinOpNode) -> i32 {
+    let BinOpNode {
+      left,
+      right,
+      operator,
+    } = node;
+
+    let lhs = self.visit(left);
+    let rhs = self.visit(right);
+    evaluate(lhs, rhs, operator.clone())
+  }
+}

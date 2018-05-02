@@ -6,6 +6,7 @@ mod lexer;
 mod node;
 mod parser;
 mod token;
+mod visitor;
 
 use interpreter::Interpreter;
 

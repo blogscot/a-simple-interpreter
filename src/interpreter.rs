@@ -1,5 +1,6 @@
-use node::{Evaluator, Node, NodeVisitor};
+use node::Node;
 use parser::Parser;
+use visitor::{Evaluator, NodeVisitor};
 
 pub struct Interpreter {
   pub root_node: Box<Node>,
