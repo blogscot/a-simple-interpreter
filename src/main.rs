@@ -11,6 +11,6 @@ mod visitor;
 use interpreter::Interpreter;
 
 fn main() {
-    let interpreter = Interpreter::new("82 + 2");
-    println!("{}", interpreter.evaluate());
+  let interpreter = Interpreter::new("82 + 2");
+  println!("{}", interpreter.interpret());
 }
