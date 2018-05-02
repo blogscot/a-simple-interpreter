@@ -86,4 +86,16 @@ mod tests {
     let interpreter = Interpreter::new("6 * (3 + 7) / 2");
     assert_eq!(interpreter.evaluate(), 30);
   }
+
+  #[test]
+  fn interpret_negative_number() {
+    let interpreter = Interpreter::new("1 - -1");
+    assert_eq!(interpreter.evaluate(), 2);
+  }
+
+  #[test]
+  fn interpret_multiple_negative_numbers() {
+    let interpreter = Interpreter::new("-5 * (5 - -5) / -10");
+    assert_eq!(interpreter.evaluate(), 5);
+  }
 }

@@ -6,4 +6,4 @@ This is my implementation of that, but in Rust!
 
 <sup>1</sup> It's really really not that simple.
 
-Current Activity: Part [7](https://ruslanspivak.com/lsbasi-part7/) of 14
+Current Activity: Part [8](https://ruslanspivak.com/lsbasi-part8/) of 14

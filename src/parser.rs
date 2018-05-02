@@ -3,7 +3,7 @@ use token::TokenType;
 use token::TokenType::*;
 
 use lexer::Lexer;
-use node::{BinOpNode, Node, NumNode};
+use node::{BinOpNode, Node, NumNode, UnaryOpNode};
 
 #[derive(Clone)]
 pub struct Parser {
@@ -41,21 +41,27 @@ impl Parser {
     }
   }
   fn factor(&mut self) -> Box<Node> {
+    // factor : <PLUS | Minus) Factor | Integer | LParen expr RParen
     let token_type = self.get_token_type();
 
-    if let Integer(value) = token_type {
+    if token_type == Plus || token_type == Minus {
+      self.consume(&token_type);
+      let node = UnaryOpNode::new(token_type, self.factor());
+      Box::new(node)
+    } else if let Integer(value) = token_type {
       self.consume(&token_type);
       Box::new(NumNode::new(value))
     } else if let LParen = token_type {
       self.consume(&token_type);
-      let result = self.expr();
+      let node = self.expr();
       self.consume(&TokenType::RParen);
-      result
+      node
     } else {
       panic!(format!("Invalid factor: {}", token_type));
     }
   }
   fn term(&mut self) -> Box<Node> {
+    // factor ((Multiply | Divide) factor) *
     let mut node = self.factor();
 
     let mut token_type = self.get_token_type();
@@ -67,6 +73,7 @@ impl Parser {
     node
   }
   fn expr(&mut self) -> Box<Node> {
+    // term ((Plus | Minus) term))*
     let mut node = self.term();
 
     let mut token_type = self.get_token_type();

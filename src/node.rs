@@ -74,3 +74,20 @@ impl Node for BinOpNode {
     visitor.visit_binop(self)
   }
 }
+
+pub struct UnaryOpNode {
+  pub operator: TokenType,
+  pub expr: Box<Node>,
+}
+
+impl UnaryOpNode {
+  pub fn new(operator: TokenType, expr: Box<Node>) -> Self {
+    UnaryOpNode { operator, expr }
+  }
+}
+
+impl Node for UnaryOpNode {
+  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+    visitor.visit_unaryop(self)
+  }
+}
