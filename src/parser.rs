@@ -37,7 +37,7 @@ impl Parser {
     }
   }
   fn factor(&mut self) -> Box<Node> {
-    // factor : <PLUS | Minus) Factor | Integer | LParen expr RParen
+    // factor : (PLUS | Minus) Factor | Integer | LParen expr RParen
     let current_token = self.get_current_token();
 
     if current_token == Plus || current_token == Minus {
@@ -57,7 +57,7 @@ impl Parser {
     }
   }
   fn term(&mut self) -> Box<Node> {
-    // factor ((Multiply | Divide) factor) *
+    // factor ((Multiply | Divide) factor)*
     let mut node = self.factor();
 
     let mut current_token = self.get_current_token();
