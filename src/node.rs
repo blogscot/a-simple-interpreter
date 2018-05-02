@@ -1,5 +1,5 @@
 use std::fmt;
-use token::TokenType;
+use token::Token;
 use visitor::NodeVisitor;
 
 use mopa;
@@ -30,7 +30,7 @@ impl Node for NumNode {
 pub struct BinOpNode {
   pub left: Box<Node>,
   pub right: Box<Node>,
-  pub operator: TokenType,
+  pub operator: Token,
 }
 
 pub fn to_string(node: &Box<Node>) -> String {
@@ -60,7 +60,7 @@ impl fmt::Display for BinOpNode {
 }
 
 impl BinOpNode {
-  pub fn new(left: Box<Node>, right: Box<Node>, operator: TokenType) -> Self {
+  pub fn new(left: Box<Node>, right: Box<Node>, operator: Token) -> Self {
     BinOpNode {
       left,
       right,
@@ -76,12 +76,12 @@ impl Node for BinOpNode {
 }
 
 pub struct UnaryOpNode {
-  pub operator: TokenType,
+  pub operator: Token,
   pub expr: Box<Node>,
 }
 
 impl UnaryOpNode {
-  pub fn new(operator: TokenType, expr: Box<Node>) -> Self {
+  pub fn new(operator: Token, expr: Box<Node>) -> Self {
     UnaryOpNode { operator, expr }
   }
 }

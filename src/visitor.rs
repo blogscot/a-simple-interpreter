@@ -1,6 +1,6 @@
 use node::{BinOpNode, Node, NumNode, UnaryOpNode};
-use token::TokenType;
-use token::TokenType::*;
+use token::Token;
+use token::Token::*;
 
 pub trait NodeVisitor {
   fn visit(&self, node: &Box<Node>) -> i32 {
@@ -45,7 +45,7 @@ impl NodeVisitor for Evaluator {
   }
 }
 
-pub fn evaluate(lhs: i32, rhs: i32, operator: &TokenType) -> i32 {
+pub fn evaluate(lhs: i32, rhs: i32, operator: &Token) -> i32 {
   match operator {
     Plus => lhs + rhs,
     Multiply => lhs * rhs,

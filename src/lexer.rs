@@ -1,6 +1,5 @@
 use token::Token;
-use token::TokenType;
-use token::TokenType::*;
+use token::Token::*;
 
 #[derive(Clone)]
 pub struct Lexer {
@@ -46,35 +45,35 @@ impl Lexer {
           self.skip_whitespace();
           continue;
         }
-        char if char.is_digit(10) => Some(Token::new(Integer(self.integer()))),
+        char if char.is_digit(10) => Some(Integer(self.integer())),
         '+' => {
           self.advance();
-          Some(Token::new(Plus))
+          Some(Plus)
         }
         '-' => {
           self.advance();
-          Some(Token::new(Minus))
+          Some(Minus)
         }
         '*' => {
           self.advance();
-          Some(Token::new(Multiply))
+          Some(Multiply)
         }
         '/' => {
           self.advance();
-          Some(Token::new(Divide))
+          Some(Divide)
         }
         '(' => {
           self.advance();
-          Some(Token::new(LParen))
+          Some(LParen)
         }
         ')' => {
           self.advance();
-          Some(Token::new(RParen))
+          Some(RParen)
         }
         _ => panic!("Unknown token found!"),
       };
     }
-    Some(Token::new(TokenType::EOF))
+    Some(Token::EOF)
   }
 }
 
@@ -83,7 +82,7 @@ mod tests {
   use super::*;
 
   fn build_token(value: i32) -> Token {
-    Token::new(Integer(value))
+    Integer(value)
   }
 
   #[test]
@@ -91,9 +90,9 @@ mod tests {
     let mut lexer = Lexer::new("4 + 7".into());
 
     assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(Plus));
+    assert_eq!(lexer.get_next_token().unwrap(), Plus);
     assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(EOF));
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
   #[test]
@@ -101,21 +100,21 @@ mod tests {
     let mut lexer = Lexer::new("4 * 7".into());
 
     assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(Multiply));
+    assert_eq!(lexer.get_next_token().unwrap(), Multiply);
     assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(EOF));
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
   #[test]
   fn lex_expression_in_parens() {
     let mut lexer = Lexer::new("(4 - 7)".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(LParen));
+    assert_eq!(lexer.get_next_token().unwrap(), LParen);
     assert_eq!(lexer.get_next_token().unwrap(), build_token(4));
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(Minus));
+    assert_eq!(lexer.get_next_token().unwrap(), Minus);
     assert_eq!(lexer.get_next_token().unwrap(), build_token(7));
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(RParen));
-    assert_eq!(lexer.get_next_token().unwrap(), Token::new(EOF));
+    assert_eq!(lexer.get_next_token().unwrap(), RParen);
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
 }
