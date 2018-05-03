@@ -1,6 +1,9 @@
 #[macro_use]
 extern crate mopa;
 
+#[macro_use]
+extern crate lazy_static;
+
 mod interpreter;
 mod lexer;
 mod node;

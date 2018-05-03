@@ -4,4 +4,5 @@ version = "0.1.0"
 authors = ["iain"]
 
 [dependencies]
-mopa = "*"
+mopa = "0.2.2"
+lazy_static = "1.0.0"

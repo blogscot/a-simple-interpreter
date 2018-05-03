@@ -1,6 +1,17 @@
 use token::Token;
 use token::Token::*;
 
+use std::collections::HashMap;
+
+lazy_static! {
+  static ref RESERVED_WORDS: HashMap<&'static str, Token> = {
+    let mut reserved_words = HashMap::new();
+    reserved_words.insert("BEGIN", Token::Begin);
+    reserved_words.insert("END", Token::End);
+    reserved_words
+  };
+}
+
 #[derive(Clone)]
 pub struct Lexer {
   text: String,
@@ -17,6 +28,19 @@ impl Lexer {
       current_char: Some(chars[0]),
     }
   }
+  /// Returns an option to the character following
+  /// the current token.
+  pub fn peek(&self) -> Option<char> {
+    let position = self.position + 1;
+    if position > self.text.len() - 1 {
+      None
+    } else {
+      Some(self.text.as_bytes()[position] as char)
+    }
+  }
+  /// Advances the lexer position within the input text,
+  /// setting the `current_char` to value found at that
+  /// location.
   fn advance(&mut self) {
     self.position += 1;
     if self.position > self.text.len() - 1 {
@@ -29,6 +53,23 @@ impl Lexer {
     while self.current_char != None && self.current_char.unwrap().is_whitespace() {
       self.advance()
     }
+  }
+  /// Handles identifiers and reserved keywords
+  fn id(&mut self) -> Option<Token> {
+    let mut result = String::new();
+    while self.current_char != None && self.current_char.unwrap().is_alphanumeric() {
+      result.push(self.current_char.unwrap());
+      self.advance();
+    }
+    let token;
+    if RESERVED_WORDS.contains_key(result.as_str()) {
+      token = RESERVED_WORDS
+        .get(result.as_str())
+        .map(|token| token.clone());
+    } else {
+      token = Some(Id(result));
+    }
+    token
   }
   fn integer(&mut self) -> i32 {
     let mut digits = String::new();
@@ -50,6 +91,20 @@ impl Lexer {
           self.advance();
           Some(Plus)
         }
+        char if char.is_alphanumeric() => self.id(),
+        ':' if self.peek() == Some('=') => {
+          self.advance();
+          self.advance();
+          Some(Assign)
+        }
+        ';' => {
+          self.advance();
+          Some(Semi)
+        }
+        '.' => {
+          self.advance();
+          Some(Period)
+        }
         '-' => {
           self.advance();
           Some(Minus)
@@ -70,7 +125,7 @@ impl Lexer {
           self.advance();
           Some(RParen)
         }
-        _ => panic!("Unknown token found!"),
+        unknown => panic!("Unknown token found: {}", unknown),
       };
     }
     Some(Token::EOF)
@@ -110,6 +165,26 @@ mod tests {
     assert_eq!(lexer.get_next_token().unwrap(), Minus);
     assert_eq!(lexer.get_next_token().unwrap(), Integer(7));
     assert_eq!(lexer.get_next_token().unwrap(), RParen);
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
+  }
+
+  #[test]
+  fn lex_reserved_keywords() {
+    let mut lexer = Lexer::new("BEGIN END".into());
+
+    assert_eq!(lexer.get_next_token().unwrap(), Begin);
+    assert_eq!(lexer.get_next_token().unwrap(), End);
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
+  }
+
+  #[test]
+  fn lex_assignment() {
+    let mut lexer = Lexer::new("a := 10;".into());
+
+    assert_eq!(lexer.get_next_token().unwrap(), Id("a".to_string()));
+    assert_eq!(lexer.get_next_token().unwrap(), Assign);
+    assert_eq!(lexer.get_next_token().unwrap(), Integer(10));
+    assert_eq!(lexer.get_next_token().unwrap(), Semi);
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
