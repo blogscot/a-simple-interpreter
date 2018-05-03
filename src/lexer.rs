@@ -170,10 +170,11 @@ mod tests {
 
   #[test]
   fn lex_reserved_keywords() {
-    let mut lexer = Lexer::new("BEGIN END".into());
+    let mut lexer = Lexer::new("BEGIN END.".into());
 
     assert_eq!(lexer.get_next_token().unwrap(), Begin);
     assert_eq!(lexer.get_next_token().unwrap(), End);
+    assert_eq!(lexer.get_next_token().unwrap(), Period);
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
