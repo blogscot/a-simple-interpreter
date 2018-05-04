@@ -8,6 +8,7 @@ lazy_static! {
     let mut reserved_words = HashMap::new();
     reserved_words.insert("BEGIN", Token::Begin);
     reserved_words.insert("END", Token::End);
+    reserved_words.insert("DIV", Token::Divide);
     reserved_words
   };
 }
@@ -112,10 +113,6 @@ impl Lexer {
         '*' => {
           self.advance();
           Some(Multiply)
-        }
-        '/' => {
-          self.advance();
-          Some(Divide)
         }
         '(' => {
           self.advance();

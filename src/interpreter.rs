@@ -80,7 +80,7 @@ mod tests {
     BEGIN 
       a := 10 * 4;
       b := -19 + 1;
-      result := a / b - 1 
+      result := a DIV b - 1 
     END.
     "#,
     );
@@ -95,7 +95,7 @@ mod tests {
       BEGIN
         a := 10 * 4;
         b := -19 + 1;
-        result := a / b - 1
+        result := a DIV b - 1
       END
     END.
     "#,
@@ -111,9 +111,9 @@ mod tests {
       BEGIN
         a := 10 * 4;
         b := -19 + 1;
-        result := a / b - 1
+        result := a DIV b - 1
       END;
-      c := 22 / 3;
+      c := 22 DIV 3;
     END.
     "#,
     );
