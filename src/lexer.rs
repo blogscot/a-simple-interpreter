@@ -92,6 +92,10 @@ impl Lexer {
           Some(Plus)
         }
         char if char.is_alphanumeric() => self.id(),
+        '_' if self.peek().unwrap().is_alphanumeric() => {
+          self.advance();
+          self.id()
+        }
         ':' if self.peek() == Some('=') => {
           self.advance();
           self.advance();
