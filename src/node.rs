@@ -5,7 +5,7 @@ use visitor::NodeVisitor;
 use mopa;
 
 pub trait Node: mopa::Any {
-  fn accept(&self, visitor: &NodeVisitor) -> i32;
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32;
 }
 
 mopafy!(Node);
@@ -22,7 +22,7 @@ impl NumNode {
 }
 
 impl Node for NumNode {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_num(self)
   }
 }
@@ -70,7 +70,7 @@ impl BinOpNode {
 }
 
 impl Node for BinOpNode {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_binop(self)
   }
 }
@@ -87,7 +87,7 @@ impl UnaryOpNode {
 }
 
 impl Node for UnaryOpNode {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_unaryop(self)
   }
 }
@@ -103,7 +103,7 @@ impl CompoundNode {
 }
 
 impl Node for CompoundNode {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_compound(self)
   }
 }
@@ -125,7 +125,7 @@ impl AssignNode {
 }
 
 impl Node for AssignNode {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_assign(self)
   }
 }
@@ -141,7 +141,7 @@ impl VarNode {
 }
 
 impl Node for VarNode {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_var(self)
   }
 }
@@ -149,7 +149,7 @@ impl Node for VarNode {
 pub struct NoOpNode {}
 
 impl Node for NoOpNode {
-  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_noop(self)
   }
 }

@@ -14,7 +14,7 @@ mod visitor;
 use interpreter::Interpreter;
 
 fn main() {
-  let interpreter = Interpreter::new(
+  let mut interpreter = Interpreter::new(
     r#"
   BEGIN 
   END.
