@@ -104,7 +104,11 @@ impl Parser {
     Box::new(NoOpNode {})
   }
   fn factor(&mut self) -> Box<Node> {
-    // factor : (PLUS | Minus) Factor | Integer | LParen expr RParen
+    // factor : Plus factor
+    //        | Minus factor
+    //        | Integer
+    //        | LParen expr RParen
+    //        | variable
     let current_token = self.get_current_token();
 
     if current_token == Plus || current_token == Minus {
