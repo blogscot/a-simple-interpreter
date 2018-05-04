@@ -28,74 +28,114 @@ mod tests {
   use super::*;
 
   #[test]
-  fn add_two_single_digit_numbers() {
-    let interpreter = Interpreter::new("4 + 7");
-    assert_eq!(interpreter.interpret(), 11);
+  fn begin_then_end() {
+    let interpreter = Interpreter::new(r#"BEGIN END."#);
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn subtract_two_single_digit_numbers() {
-    let interpreter = Interpreter::new("4 - 7");
-    assert_eq!(interpreter.interpret(), -3);
+  #[should_panic]
+  fn begin_then_end_without_period() {
+    let interpreter = Interpreter::new(r#"BEGIN END"#);
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn multiply_two_single_digit_numbers() {
-    let interpreter = Interpreter::new("4 * 7");
-    assert_eq!(interpreter.interpret(), 28);
+  #[should_panic]
+  fn begin_then_end_with_lowercase() {
+    let interpreter = Interpreter::new(r#"BEGIN ENd"#);
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn divide_two_single_digit_numbers() {
-    let interpreter = Interpreter::new("10 / 3");
-    assert_eq!(interpreter.interpret(), 3);
+  fn program_contains_single_statement() {
+    let interpreter = Interpreter::new(r#"BEGIN a := 10; END."#);
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn add_multiple_digit_numbers() {
-    let interpreter = Interpreter::new("101 + 99");
-    assert_eq!(interpreter.interpret(), 200);
+  fn program_contains_single_statement_without_final_semicolon() {
+    let interpreter = Interpreter::new(r#"BEGIN a := 10 END."#);
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn subtract_multiple_digit_numbers() {
-    let interpreter = Interpreter::new("1234 - 134");
-    assert_eq!(interpreter.interpret(), 1100);
+  #[should_panic]
+  fn program_contains_single_statement_without_colon() {
+    let interpreter = Interpreter::new(r#"BEGIN a = 10 END."#);
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn add_multiple_numbers() {
-    let interpreter = Interpreter::new("1 + 2 + 3 + 4 + 5");
-    assert_eq!(interpreter.interpret(), 15);
+  #[should_panic]
+  fn program_contains_single_statement_with_double_equals() {
+    let interpreter = Interpreter::new(r#"BEGIN a :== 10 END."#);
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn add_and_subtract_multiple_numbers() {
-    let interpreter = Interpreter::new("1 + 2 - 3 + 4 - 5");
-    assert_eq!(interpreter.interpret(), -1);
+  fn program_contains_multiple_statements() {
+    let interpreter = Interpreter::new(
+      r#"
+    BEGIN 
+      a := 10 * 4;
+      b := -19 + 1;
+      result := a / b - 1 
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn muliply_and_divide_multiple_numbers() {
-    let interpreter = Interpreter::new("10 * 20 / 2 / 10");
-    assert_eq!(interpreter.interpret(), 10);
+  fn program_contains_a_compound_statement() {
+    let interpreter = Interpreter::new(
+      r#"
+    BEGIN
+      BEGIN
+        a := 10 * 4;
+        b := -19 + 1;
+        result := a / b - 1
+      END
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn evaluate_multiterm_expression_contain_parens() {
-    let interpreter = Interpreter::new("6 * (3 + 7) / 2");
-    assert_eq!(interpreter.interpret(), 30);
+  fn program_contains_a_compound_statement_with_trailing_statement() {
+    let interpreter = Interpreter::new(
+      r#"
+    BEGIN
+      BEGIN
+        a := 10 * 4;
+        b := -19 + 1;
+        result := a / b - 1
+      END;
+      c := 22 / 3;
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  fn interpret_negative_number() {
-    let interpreter = Interpreter::new("1 - -1");
-    assert_eq!(interpreter.interpret(), 2);
+  #[should_panic]
+  fn program_contains_a_compound_statement_with_trailing_statement_missing_semicolon() {
+    let interpreter = Interpreter::new(
+      r#"
+    BEGIN
+      BEGIN
+        a := 10 * 4;
+        b := -19 + 1;
+        result := a / b - 1
+      END
+      c := 22 / 3;
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), 0);
   }
 
-  #[test]
-  fn interpret_multiple_negative_numbers() {
-    let interpreter = Interpreter::new("-5 * (5 - -5) / -10");
-    assert_eq!(interpreter.interpret(), 5);
-  }
 }
