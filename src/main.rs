@@ -14,6 +14,11 @@ mod visitor;
 use interpreter::Interpreter;
 
 fn main() {
-  let interpreter = Interpreter::new("82 + 2");
+  let interpreter = Interpreter::new(
+    r#"
+  BEGIN 
+  END.
+  "#,
+  );
   println!("{}", interpreter.interpret());
 }

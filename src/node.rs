@@ -91,3 +91,65 @@ impl Node for UnaryOpNode {
     visitor.visit_unaryop(self)
   }
 }
+
+pub struct CompoundNode {
+  pub children: Vec<Box<Node>>,
+}
+
+impl CompoundNode {
+  pub fn new(children: Vec<Box<Node>>) -> Self {
+    CompoundNode { children }
+  }
+}
+
+impl Node for CompoundNode {
+  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+    visitor.visit_compound(self)
+  }
+}
+
+pub struct AssignNode {
+  pub identifier: Box<Node>,
+  pub expr: Box<Node>,
+  pub operator: Token,
+}
+
+impl AssignNode {
+  pub fn new(identifier: Box<Node>, expr: Box<Node>, operator: Token) -> Self {
+    AssignNode {
+      identifier,
+      expr,
+      operator,
+    }
+  }
+}
+
+impl Node for AssignNode {
+  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+    visitor.visit_assign(self)
+  }
+}
+
+pub struct VarNode {
+  pub identifier: Token,
+}
+
+impl VarNode {
+  pub fn new(identifier: Token) -> Self {
+    VarNode { identifier }
+  }
+}
+
+impl Node for VarNode {
+  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+    visitor.visit_var(self)
+  }
+}
+
+pub struct NoOpNode {}
+
+impl Node for NoOpNode {
+  fn accept(&self, visitor: &NodeVisitor) -> i32 {
+    visitor.visit_noop(self)
+  }
+}
