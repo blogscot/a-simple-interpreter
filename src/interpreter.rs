@@ -34,16 +34,15 @@ mod tests {
   }
 
   #[test]
-  #[should_panic]
-  fn begin_then_end_without_period() {
-    let mut interpreter = Interpreter::new(r#"BEGIN END"#);
+  fn reserved_words_can_be_in_either_case() {
+    let mut interpreter = Interpreter::new(r#"begin end."#);
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
   #[should_panic]
-  fn begin_then_end_with_lowercase() {
-    let mut interpreter = Interpreter::new(r#"BEGIN ENd"#);
+  fn begin_then_end_without_period() {
+    let mut interpreter = Interpreter::new(r#"BEGIN END"#);
     assert_eq!(interpreter.interpret(), 0);
   }
 
@@ -91,13 +90,13 @@ mod tests {
   fn program_contains_a_compound_statement() {
     let mut interpreter = Interpreter::new(
       r#"
-    BEGIN
-      BEGIN
+    begin
+      begin
         a := 10 * 4;
         b := -19 + 1;
-        result := a DIV b - 1
-      END
-    END.
+        result := a div b - 1
+      end
+    end.
     "#,
     );
     assert_eq!(interpreter.interpret(), 0);

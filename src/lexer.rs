@@ -62,15 +62,14 @@ impl Lexer {
       result.push(self.current_char.unwrap());
       self.advance();
     }
-    let token;
-    if RESERVED_WORDS.contains_key(result.as_str()) {
-      token = RESERVED_WORDS
-        .get(result.as_str())
-        .map(|token| token.clone());
+    let uppercase_result = result.to_uppercase();
+    if RESERVED_WORDS.contains_key(uppercase_result.as_str()) {
+      RESERVED_WORDS
+        .get(uppercase_result.as_str())
+        .map(|token| token.clone())
     } else {
-      token = Some(Id(result));
+      Some(Id(result))
     }
-    token
   }
   fn integer(&mut self) -> i32 {
     let mut digits = String::new();
