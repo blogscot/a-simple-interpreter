@@ -64,9 +64,7 @@ impl Lexer {
     }
     let uppercase_result = result.to_uppercase();
     if RESERVED_WORDS.contains_key(uppercase_result.as_str()) {
-      RESERVED_WORDS
-        .get(uppercase_result.as_str())
-        .map(|token| token.clone())
+      RESERVED_WORDS.get(uppercase_result.as_str()).cloned()
     } else {
       Some(Id(result))
     }

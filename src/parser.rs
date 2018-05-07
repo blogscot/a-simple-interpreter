@@ -37,7 +37,7 @@ impl Parser {
     }
   }
   fn program(&mut self) -> Box<Node> {
-    // "program : compound_statement DOT"
+    // "program : compound_statement Period"
     let node = self.compound_statement();
     self.consume(&Period);
     node
@@ -48,12 +48,11 @@ impl Parser {
     let nodes = self.statement_list();
     self.consume(&End);
 
-    let root = Box::new(CompoundNode::new(nodes));
-    root
+    Box::new(CompoundNode::new(nodes))
   }
   fn statement_list(&mut self) -> Vec<Box<Node>> {
     // "statement_list : statement
-    //                   | statement SEMI statement_list"
+    //                 | statement SEMI statement_list"
     let node = self.statement();
     let mut results = vec![node];
 
@@ -68,7 +67,7 @@ impl Parser {
         )
       }
     }
-    return results;
+    results
   }
   fn statement(&mut self) -> Box<Node> {
     // "statement : compound_statement

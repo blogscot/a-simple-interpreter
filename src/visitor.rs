@@ -76,11 +76,9 @@ impl NodeVisitor for Evaluator {
     }
   }
   fn visit_compound(&mut self, node: &CompoundNode) -> i32 {
-    node
-      .children
-      .iter()
-      .map(|child| self.visit(child))
-      .collect::<Vec<_>>();
+    for child in &node.children {
+      self.visit(child);
+    }
     0
   }
   fn visit_assign(&mut self, node: &AssignNode) -> i32 {
