@@ -114,7 +114,7 @@ impl Parser {
       self.consume(&current_token);
       let node = UnaryOpNode::new(current_token, self.factor());
       Box::new(node)
-    } else if let Integer(value) = current_token {
+    } else if let IntegerConst(value) = current_token {
       self.consume(&current_token);
       Box::new(NumNode::new(value))
     } else if let LParen = current_token {
@@ -131,7 +131,7 @@ impl Parser {
     let mut node = self.factor();
 
     let mut current_token = self.get_current_token();
-    while current_token == Multiply || current_token == Divide {
+    while current_token == Multiply || current_token == IntegerDivision {
       self.consume(&current_token);
       node = Box::new(BinOpNode::new(node, self.factor(), current_token));
       current_token = self.get_current_token();
