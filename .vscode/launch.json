@@ -12,7 +12,11 @@
         "args": [
           "build",
           "--bin=basic-interpreter"
-        ]
+        ],
+        "filter": {
+          "name": "basic-interpreter",
+          "kind": "bin"
+        }
       },
       "args": [],
       "cwd": "${workspaceFolder}"
