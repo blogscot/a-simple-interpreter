@@ -7,7 +7,7 @@ lazy_static! {
   static ref RESERVED_WORDS: HashMap<&'static str, Token> = {
     let mut reserved_words = HashMap::new();
     reserved_words.insert("PROGRAM", Program("".into()));
-    reserved_words.insert("VAR", Program("".into()));
+    reserved_words.insert("VAR", Var("".into()));
     reserved_words.insert("INTEGER", Integer);
     reserved_words.insert("REAL", Real);
     reserved_words.insert("BEGIN", Begin);
@@ -126,6 +126,10 @@ impl Lexer {
           self.advance();
           Some(Assign)
         }
+        ':' => {
+          self.advance();
+          Some(Colon)
+        }
         ';' => {
           self.advance();
           Some(Semi)
@@ -134,6 +138,10 @@ impl Lexer {
           self.advance();
           Some(Period)
         }
+        ',' => {
+          self.advance();
+          Some(Comma)
+        }
         '-' => {
           self.advance();
           Some(Minus)
@@ -141,6 +149,10 @@ impl Lexer {
         '*' => {
           self.advance();
           Some(Multiply)
+        }
+        '/' => {
+          self.advance();
+          Some(RealDivision)
         }
         '(' => {
           self.advance();
@@ -182,6 +194,26 @@ mod tests {
   }
 
   #[test]
+  fn divide_two_integers() {
+    let mut lexer = Lexer::new("14 DIV 7".into());
+
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(14));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerDivision);
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
+  }
+
+  #[test]
+  fn divide_two_real_numbers() {
+    let mut lexer = Lexer::new("14.0 / 7.0".into());
+
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst(14.0));
+    assert_eq!(lexer.get_next_token().unwrap(), RealDivision);
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst(7.0));
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
+  }
+
+  #[test]
   fn multiply_two_real_numbers() {
     let mut lexer = Lexer::new("4.125 * 3.3333".into());
 
@@ -205,8 +237,22 @@ mod tests {
 
   #[test]
   fn lex_reserved_keywords() {
-    let mut lexer = Lexer::new("BEGIN END.".into());
+    let mut lexer = Lexer::new(
+      r#"
+    PROGRAM Part10;
+    VAR number : INTEGER;
+    BEGIN
+    END."#.into(),
+    );
 
+    assert_eq!(lexer.get_next_token().unwrap(), Program("".into()));
+    assert_eq!(lexer.get_next_token().unwrap(), Id("Part10".to_string()));
+    assert_eq!(lexer.get_next_token().unwrap(), Semi);
+    assert_eq!(lexer.get_next_token().unwrap(), Var("".to_string()));
+    assert_eq!(lexer.get_next_token().unwrap(), Id("number".to_string()));
+    assert_eq!(lexer.get_next_token().unwrap(), Colon);
+    assert_eq!(lexer.get_next_token().unwrap(), Integer);
+    assert_eq!(lexer.get_next_token().unwrap(), Semi);
     assert_eq!(lexer.get_next_token().unwrap(), Begin);
     assert_eq!(lexer.get_next_token().unwrap(), End);
     assert_eq!(lexer.get_next_token().unwrap(), Period);
