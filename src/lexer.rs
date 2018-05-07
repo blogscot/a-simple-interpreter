@@ -54,6 +54,12 @@ impl Lexer {
       self.current_char = Some(self.text.as_bytes()[self.position] as char)
     }
   }
+  fn skip_comment(&mut self) {
+    while self.current_char != Some('}') {
+      self.advance()
+    }
+    self.advance()
+  }
   fn skip_whitespace(&mut self) {
     while self.current_char != None && self.current_char.unwrap().is_whitespace() {
       self.advance()
@@ -73,13 +79,25 @@ impl Lexer {
       Some(Id(result))
     }
   }
-  fn integer(&mut self) -> i32 {
+
+  fn number(&mut self) -> Option<Token> {
     let mut digits = String::new();
     while self.current_char != None && self.current_char.unwrap().is_digit(10) {
       digits.push(self.current_char.unwrap());
       self.advance();
+
+      if self.current_char == Some('.') {
+        digits.push('.');
+        self.advance();
+
+        while self.current_char != None && self.current_char.unwrap().is_digit(10) {
+          digits.push(self.current_char.unwrap());
+          self.advance();
+        }
+        return Some(RealConst(digits.parse::<f32>().unwrap()));
+      }
     }
-    digits.parse::<i32>().unwrap()
+    Some(IntegerConst(digits.parse::<i32>().unwrap()))
   }
   pub fn get_next_token(&mut self) -> Option<Token> {
     while self.current_char != None {
@@ -88,7 +106,12 @@ impl Lexer {
           self.skip_whitespace();
           continue;
         }
-        char if char.is_digit(10) => Some(Integer(self.integer())),
+        '{' => {
+          self.advance();
+          self.skip_comment();
+          continue;
+        }
+        char if char.is_digit(10) => self.number(),
         '+' => {
           self.advance();
           Some(Plus)
@@ -142,9 +165,9 @@ mod tests {
   fn add_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 + 7".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), Integer(4));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(4));
     assert_eq!(lexer.get_next_token().unwrap(), Plus);
-    assert_eq!(lexer.get_next_token().unwrap(), Integer(7));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -152,9 +175,19 @@ mod tests {
   fn multiply_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 * 7".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), Integer(4));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(4));
     assert_eq!(lexer.get_next_token().unwrap(), Multiply);
-    assert_eq!(lexer.get_next_token().unwrap(), Integer(7));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
+  }
+
+  #[test]
+  fn multiply_two_real_numbers() {
+    let mut lexer = Lexer::new("4.125 * 3.3333".into());
+
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst(4.125));
+    assert_eq!(lexer.get_next_token().unwrap(), Multiply);
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst(3.3333));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -163,9 +196,9 @@ mod tests {
     let mut lexer = Lexer::new("(4 - 7)".into());
 
     assert_eq!(lexer.get_next_token().unwrap(), LParen);
-    assert_eq!(lexer.get_next_token().unwrap(), Integer(4));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(4));
     assert_eq!(lexer.get_next_token().unwrap(), Minus);
-    assert_eq!(lexer.get_next_token().unwrap(), Integer(7));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
     assert_eq!(lexer.get_next_token().unwrap(), RParen);
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
@@ -186,9 +219,14 @@ mod tests {
 
     assert_eq!(lexer.get_next_token().unwrap(), Id("a".to_string()));
     assert_eq!(lexer.get_next_token().unwrap(), Assign);
-    assert_eq!(lexer.get_next_token().unwrap(), Integer(10));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(10));
     assert_eq!(lexer.get_next_token().unwrap(), Semi);
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
+  #[test]
+  fn lex_comment() {
+    let mut lexer = Lexer::new(r#"{ This is how you write a comment }"#.into());
+    assert_eq!(lexer.get_next_token().unwrap(), EOF);
+  }
 }
