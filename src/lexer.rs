@@ -6,9 +6,13 @@ use std::collections::HashMap;
 lazy_static! {
   static ref RESERVED_WORDS: HashMap<&'static str, Token> = {
     let mut reserved_words = HashMap::new();
-    reserved_words.insert("BEGIN", Token::Begin);
-    reserved_words.insert("END", Token::End);
-    reserved_words.insert("DIV", Token::Divide);
+    reserved_words.insert("PROGRAM", Program("".into()));
+    reserved_words.insert("VAR", Program("".into()));
+    reserved_words.insert("INTEGER", Integer);
+    reserved_words.insert("REAL", Real);
+    reserved_words.insert("BEGIN", Begin);
+    reserved_words.insert("END", End);
+    reserved_words.insert("DIV", IntegerDivision);
     reserved_words
   };
 }
