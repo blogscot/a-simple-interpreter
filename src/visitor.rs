@@ -63,7 +63,7 @@ impl NodeVisitor for Evaluator {
       Plus => lhs + rhs,
       Multiply => lhs * rhs,
       Minus => lhs - rhs,
-      Divide => lhs / rhs,
+      IntegerDivision => lhs / rhs,
       _ => panic!("Unknown operator found: {}", operator),
     }
   }

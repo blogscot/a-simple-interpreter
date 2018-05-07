@@ -2,10 +2,10 @@ use std::fmt;
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum Token {
-  Program(String),
+  Program,
   Begin,
   End,
-  Var(String),
+  Var,
   Integer,
   Real,
   IntegerConst(i32),
@@ -29,10 +29,10 @@ pub enum Token {
 impl<'a> fmt::Display for Token {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let output = match self {
-      Token::Program(name) => format!("PROGRAM {}", name),
+      Token::Program => format!("PROGRAM"),
       Token::Begin => "BEGIN".into(),
       Token::End => "END".into(),
-      Token::Var(name) => format!("VAR {}", name),
+      Token::Var => format!("VAR"),
       Token::Integer => "INTEGER".into(),
       Token::Real => "REAL".into(),
       Token::IntegerConst(value) => format!("{}", value),

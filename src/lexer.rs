@@ -6,8 +6,8 @@ use std::collections::HashMap;
 lazy_static! {
   static ref RESERVED_WORDS: HashMap<&'static str, Token> = {
     let mut reserved_words = HashMap::new();
-    reserved_words.insert("PROGRAM", Program("".into()));
-    reserved_words.insert("VAR", Var("".into()));
+    reserved_words.insert("PROGRAM", Program);
+    reserved_words.insert("VAR", Var);
     reserved_words.insert("INTEGER", Integer);
     reserved_words.insert("REAL", Real);
     reserved_words.insert("BEGIN", Begin);
@@ -245,18 +245,24 @@ mod tests {
     END."#.into(),
     );
 
-    assert_eq!(lexer.get_next_token().unwrap(), Program("".into()));
-    assert_eq!(lexer.get_next_token().unwrap(), Id("Part10".to_string()));
-    assert_eq!(lexer.get_next_token().unwrap(), Semi);
-    assert_eq!(lexer.get_next_token().unwrap(), Var("".to_string()));
-    assert_eq!(lexer.get_next_token().unwrap(), Id("number".to_string()));
-    assert_eq!(lexer.get_next_token().unwrap(), Colon);
-    assert_eq!(lexer.get_next_token().unwrap(), Integer);
-    assert_eq!(lexer.get_next_token().unwrap(), Semi);
-    assert_eq!(lexer.get_next_token().unwrap(), Begin);
-    assert_eq!(lexer.get_next_token().unwrap(), End);
-    assert_eq!(lexer.get_next_token().unwrap(), Period);
-    assert_eq!(lexer.get_next_token().unwrap(), EOF);
+    let keywords = vec![
+      Program,
+      Id("Part10".to_string()),
+      Semi,
+      Var,
+      Id("number".to_string()),
+      Colon,
+      Integer,
+      Semi,
+      Begin,
+      End,
+      Period,
+      EOF,
+    ];
+
+    for keyword in keywords {
+      assert_eq!(lexer.get_next_token().unwrap(), keyword);
+    }
   }
 
   #[test]
