@@ -28,113 +28,166 @@ mod tests {
   use super::*;
 
   #[test]
-  #[ignore]
   fn begin_then_end() {
-    let mut interpreter = Interpreter::new("BEGIN END.");
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM empty;
+    BEGIN 
+    END."#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  #[ignore]
   fn reserved_words_can_be_in_either_case() {
-    let mut interpreter = Interpreter::new("begin end.");
+    let mut interpreter = Interpreter::new(
+      r#"
+    program empty;
+    begin 
+    end."#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
   #[should_panic]
   fn begin_then_end_without_period() {
-    let mut interpreter = Interpreter::new("BEGIN END");
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM empty; 
+    BEGIN END"#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  #[ignore]
   fn program_contains_single_statement() {
-    let mut interpreter = Interpreter::new("BEGIN a := 10; END.");
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM single;
+    VAR a : INTEGER;
+    BEGIN 
+      a := 10; 
+    END."#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  #[ignore]
-  fn program_contains_single_statement_without_final_semicolon() {
-    let mut interpreter = Interpreter::new("BEGIN a := 10 END.");
+  fn final_statement_does_not_require_semicolon() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM NoSemiColon;
+    VAR a : INTEGER;
+    BEGIN 
+      a := 10
+    END."#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
   #[should_panic]
-  fn program_contains_single_statement_without_colon() {
-    let mut interpreter = Interpreter::new("BEGIN a = 10 END.");
+  fn assignment_requires_colon() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM RequiresColon;
+    VAR a : INTEGER;
+    BEGIN 
+      a = 10
+    END."#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  #[ignore]
+  #[should_panic]
+  fn assignment_only_has_one_equals_sign() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM EqualSign;
+    VAR a : INTEGER;
+    BEGIN 
+      a :== 10
+    END."#,
+    );
+    assert_eq!(interpreter.interpret(), 0);
+  }
+
+  #[test]
   fn identifiers_can_start_with_underscore() {
-    let mut interpreter = Interpreter::new("BEGIN _a := 10 END.");
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM StartUnderscore;
+    VAR _a : INTEGER;
+    BEGIN 
+      _a := 10
+    END."#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
   #[should_panic]
   fn identifiers_cannot_contain_underscores() {
-    let mut interpreter = Interpreter::new("BEGIN a_num := 10 END.");
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM NoUnderscore;
+    VAR an_int : INTEGER;
+    BEGIN 
+      an_int := 10
+    END."#,
+    );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  #[should_panic]
-  fn program_contains_single_statement_with_double_equals() {
-    let mut interpreter = Interpreter::new("BEGIN a :== 10 END.");
-    assert_eq!(interpreter.interpret(), 0);
-  }
-
-  #[test]
-  #[ignore]
   fn program_contains_multiple_statements() {
     let mut interpreter = Interpreter::new(
       r#"
+    PROGRAM multiple;
+    VAR a, b, result : INTEGER;
     BEGIN 
       a := 10 * 4;
       b := -19 + 1;
       result := a DIV b - 1 
-    END.
-    "#,
+    END."#,
     );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  #[ignore]
   fn program_contains_a_compound_statement() {
     let mut interpreter = Interpreter::new(
       r#"
-    begin
-      begin
+    Program multiple;
+    Var a, b, result : INTEGER;
+    Begin
+      Begin
         a := 10 * 4;
         b := -19 + 1;
         result := a div b - 1
-      end
-    end.
+      End
+    End.
     "#,
     );
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
-  #[ignore]
   fn program_contains_a_compound_statement_with_trailing_statement() {
     let mut interpreter = Interpreter::new(
       r#"
-    BEGIN
-      BEGIN
+    Program multiple;
+    Var a, b, c, result : INTEGER;
+    Begin
+      Begin
         a := 10 * 4;
         b := -19 + 1;
-        result := a DIV b - 1
-      END;
+        result := a div b - 1
+      End;
       c := 22 DIV 3;
-    END.
+    End.
     "#,
     );
     assert_eq!(interpreter.interpret(), 0);
@@ -145,14 +198,16 @@ mod tests {
   fn program_contains_a_compound_statement_with_trailing_statement_missing_semicolon() {
     let mut interpreter = Interpreter::new(
       r#"
-    BEGIN
-      BEGIN
+    Program multiple;
+    Var a, b, c, result : INTEGER;
+    Begin
+      Begin
         a := 10 * 4;
         b := -19 + 1;
-        result := a / b - 1
-      END
-      c := 22 / 3;
-    END.
+        result := a div b - 1
+      End
+      c := 22 DIV 3;
+    End.
     "#,
     );
     assert_eq!(interpreter.interpret(), 0);

@@ -40,6 +40,7 @@ impl Parser {
     // "program : Program variable Semi block Period"
     self.consume(&Program);
     let VarNode { identifier } = *self.variable();
+    self.consume(&Semi);
     let block = self.block();
     let node = ProgramNode::new(identifier, block);
     self.consume(&Period);
@@ -69,8 +70,8 @@ impl Parser {
       let mut current_token = self.get_current_token();
       while let Id(_) = current_token {
         declarations.extend(self.variable_declaration());
-        self.consume(&current_token);
         current_token = self.get_current_token();
+        self.consume(&current_token);
       }
     }
     declarations
@@ -79,10 +80,9 @@ impl Parser {
     // "variable_declaration : Id (Comma Id)* Colon type_spec"
     let mut var_nodes: Vec<Box<Node>> = Vec::new();
     let mut identifier = self.get_current_token();
-
     self.consume(&identifier);
-    var_nodes.push(Box::new(VarNode::new(identifier)));
 
+    var_nodes.push(Box::new(VarNode::new(identifier)));
     while self.get_current_token() == Comma {
       self.consume(&Comma);
       identifier = self.get_current_token();
