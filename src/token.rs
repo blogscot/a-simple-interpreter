@@ -29,10 +29,10 @@ pub enum Token {
 impl<'a> fmt::Display for Token {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let output = match self {
-      Token::Program => format!("PROGRAM"),
+      Token::Program => "PROGRAM".into(),
       Token::Begin => "BEGIN".into(),
       Token::End => "END".into(),
-      Token::Var => format!("VAR"),
+      Token::Var => "VAR".into(),
       Token::Integer => "INTEGER".into(),
       Token::Real => "REAL".into(),
       Token::IntegerConst(value) => format!("{}", value),
