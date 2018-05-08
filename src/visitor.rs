@@ -5,8 +5,18 @@ use std::collections::HashMap;
 
 pub trait NodeVisitor {
   fn visit(&mut self, node: &Box<Node>) -> i32 {
-    if node.is::<NumNode>() {
-      self.visit_num(node.downcast_ref().unwrap())
+    if node.is::<ProgramNode>() {
+      self.visit_program(node.downcast_ref().unwrap())
+    } else if node.is::<BlockNode>() {
+      self.visit_block(node.downcast_ref().unwrap())
+    } else if node.is::<DeclarationNode>() {
+      self.visit_declaration(node.downcast_ref().unwrap())
+    } else if node.is::<TypeNode>() {
+      self.visit_type(node.downcast_ref().unwrap())
+    } else if node.is::<IntegerNumNode>() {
+      self.visit_integer(node.downcast_ref().unwrap())
+    } else if node.is::<RealNumNode>() {
+      self.visit_real(node.downcast_ref().unwrap())
     } else if node.is::<BinOpNode>() {
       self.visit_binop(node.downcast_ref().unwrap())
     } else if node.is::<UnaryOpNode>() {
@@ -23,7 +33,12 @@ pub trait NodeVisitor {
       panic!("Unknown node found: {}", to_string(node));
     }
   }
-  fn visit_num(&mut self, node: &NumNode) -> i32;
+  fn visit_program(&mut self, node: &ProgramNode) -> i32;
+  fn visit_block(&mut self, node: &BlockNode) -> i32;
+  fn visit_declaration(&mut self, node: &DeclarationNode) -> i32;
+  fn visit_type(&mut self, node: &TypeNode) -> i32;
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> i32;
+  fn visit_real(&mut self, node: &RealNumNode) -> i32;
   fn visit_binop(&mut self, node: &BinOpNode) -> i32;
   fn visit_unaryop(&mut self, node: &UnaryOpNode) -> i32;
   fn visit_compound(&mut self, node: &CompoundNode) -> i32;
@@ -47,8 +62,27 @@ impl Evaluator {
 }
 
 impl NodeVisitor for Evaluator {
-  fn visit_num(&mut self, node: &NumNode) -> i32 {
+  fn visit_program(&mut self, node: &ProgramNode) -> i32 {
+    self.visit(&node.block);
+    0
+  }
+  fn visit_block(&mut self, node: &BlockNode) -> i32 {
+    for declaration in &node.declarations {
+      self.visit(&declaration);
+    }
+    self.visit(&node.compound_statement)
+  }
+  fn visit_declaration(&mut self, _node: &DeclarationNode) -> i32 {
+    0
+  }
+  fn visit_type(&mut self, _node: &TypeNode) -> i32 {
+    0
+  }
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> i32 {
     node.value
+  }
+  fn visit_real(&mut self, node: &RealNumNode) -> i32 {
+    node.value as i32
   }
   fn visit_binop(&mut self, node: &BinOpNode) -> i32 {
     let BinOpNode {

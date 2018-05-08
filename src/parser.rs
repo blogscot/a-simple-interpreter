@@ -37,22 +37,85 @@ impl Parser {
     }
   }
   fn program(&mut self) -> Box<Node> {
-    // "program : compound_statement Period"
-    let node = self.compound_statement();
+    // "program : Program variable Semi block Period"
+    self.consume(&Program);
+    let VarNode { identifier } = *self.variable();
+    let block = self.block();
+    let node = ProgramNode::new(identifier, block);
     self.consume(&Period);
-    node
+    Box::new(node)
+  }
+  fn block(&mut self) -> Box<Node> {
+    // "block : declarations compound_statement"
+    let declarations = self.declarations();
+    let compound_statement = self.compound_statement();
+    let node = BlockNode::new(declarations, compound_statement);
+    Box::new(node)
   }
   fn compound_statement(&mut self) -> Box<Node> {
-    // "compound_statement : BEGIN statement_list END"
+    // "compound_statement : Begin statement_list End"
     self.consume(&Begin);
     let nodes = self.statement_list();
     self.consume(&End);
 
     Box::new(CompoundNode::new(nodes))
   }
+  fn declarations(&mut self) -> Vec<Box<Node>> {
+    // "declarations : Var (variable_declaration Semi)+
+    //               | empty"
+    let mut declarations: Vec<Box<Node>> = vec![];
+    if self.get_current_token() == Var {
+      self.consume(&Var);
+      let mut current_token = self.get_current_token();
+      while let Id(_) = current_token {
+        declarations.extend(self.variable_declaration());
+        self.consume(&current_token);
+        current_token = self.get_current_token();
+      }
+    }
+    declarations
+  }
+  fn variable_declaration(&mut self) -> Vec<Box<Node>> {
+    // "variable_declaration : Id (Comma Id)* Colon type_spec"
+    let mut var_nodes: Vec<Box<Node>> = Vec::new();
+    let mut identifier = self.get_current_token();
+
+    self.consume(&identifier);
+    var_nodes.push(Box::new(VarNode::new(identifier)));
+
+    while self.get_current_token() == Comma {
+      self.consume(&Comma);
+      identifier = self.get_current_token();
+      self.consume(&identifier);
+      var_nodes.push(Box::new(VarNode::new(identifier)));
+    }
+
+    self.consume(&Colon);
+
+    let type_node = *self.type_spec();
+    let mut var_declarations: Vec<Box<Node>> = vec![];
+    for node in var_nodes {
+      let boxed_type_node = Box::new(type_node.clone());
+      let declaration = DeclarationNode::new(node, boxed_type_node);
+      var_declarations.push(Box::new(declaration));
+    }
+    var_declarations
+  }
+  fn type_spec(&mut self) -> Box<TypeNode> {
+    // "type_spec : Integer
+    //              Real"
+    let current_token = self.get_current_token();
+    match current_token {
+      Integer | Real => {
+        self.consume(&current_token);
+        Box::new(TypeNode::new(current_token))
+      }
+      token => panic!("Unknown token type found {}", token),
+    }
+  }
   fn statement_list(&mut self) -> Vec<Box<Node>> {
     // "statement_list : statement
-    //                 | statement SEMI statement_list"
+    //                 | statement Semi statement_list"
     let node = self.statement();
     let mut results = vec![node];
 
@@ -80,7 +143,7 @@ impl Parser {
     }
   }
   fn assignment_statement(&mut self) -> Box<Node> {
-    // "assignment_statement : variable ASSIGN expr"
+    // "assignment_statement : variable Assign expr"
     let left = self.variable();
     let current_token = self.get_current_token();
     self.consume(&Assign);
@@ -88,8 +151,8 @@ impl Parser {
     let node = AssignNode::new(left, right, current_token);
     Box::new(node)
   }
-  fn variable(&mut self) -> Box<Node> {
-    // "variable : ID"
+  fn variable(&mut self) -> Box<VarNode> {
+    // "variable : Id"
     let current_token = self.get_current_token();
     if let Id(_) = current_token {
       self.consume(&current_token);
@@ -116,7 +179,10 @@ impl Parser {
       Box::new(node)
     } else if let IntegerConst(value) = current_token {
       self.consume(&current_token);
-      Box::new(NumNode::new(value))
+      Box::new(IntegerNumNode::new(value))
+    } else if let RealConst(value) = current_token {
+      self.consume(&current_token);
+      Box::new(RealNumNode::new(value))
     } else if let LParen = current_token {
       self.consume(&current_token);
       let node = self.expr();
@@ -129,9 +195,11 @@ impl Parser {
   fn term(&mut self) -> Box<Node> {
     // factor ((Multiply | Divide) factor)*
     let mut node = self.factor();
-
     let mut current_token = self.get_current_token();
-    while current_token == Multiply || current_token == IntegerDivision {
+
+    while current_token == Multiply || current_token == IntegerDivision
+      || current_token == RealDivision
+    {
       self.consume(&current_token);
       node = Box::new(BinOpNode::new(node, self.factor(), current_token));
       current_token = self.get_current_token();

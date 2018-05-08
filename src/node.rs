@@ -11,19 +11,36 @@ pub trait Node: mopa::Any {
 mopafy!(Node);
 
 #[derive(Debug)]
-pub struct NumNode {
+pub struct IntegerNumNode {
   pub value: i32,
 }
 
-impl NumNode {
+impl IntegerNumNode {
   pub fn new(value: i32) -> Self {
-    NumNode { value }
+    IntegerNumNode { value }
   }
 }
 
-impl Node for NumNode {
+impl Node for IntegerNumNode {
   fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
-    visitor.visit_num(self)
+    visitor.visit_integer(self)
+  }
+}
+
+#[derive(Debug)]
+pub struct RealNumNode {
+  pub value: f32,
+}
+
+impl RealNumNode {
+  pub fn new(value: f32) -> Self {
+    RealNumNode { value }
+  }
+}
+
+impl Node for RealNumNode {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
+    visitor.visit_real(self)
   }
 }
 
@@ -34,8 +51,18 @@ pub struct BinOpNode {
 }
 
 pub fn to_string(node: &Box<Node>) -> String {
-  if node.is::<NumNode>() {
-    node.downcast_ref::<NumNode>().unwrap().value.to_string()
+  if node.is::<IntegerNumNode>() {
+    node
+      .downcast_ref::<IntegerNumNode>()
+      .unwrap()
+      .value
+      .to_string()
+  } else if node.is::<RealNumNode>() {
+    node
+      .downcast_ref::<RealNumNode>()
+      .unwrap()
+      .value
+      .to_string()
   } else {
     let BinOpNode {
       left,
@@ -151,5 +178,79 @@ pub struct NoOpNode {}
 impl Node for NoOpNode {
   fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
     visitor.visit_noop(self)
+  }
+}
+
+pub struct ProgramNode {
+  pub identifier: Token,
+  pub block: Box<Node>,
+}
+
+impl ProgramNode {
+  pub fn new(identifier: Token, block: Box<Node>) -> Self {
+    ProgramNode { identifier, block }
+  }
+}
+
+impl Node for ProgramNode {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
+    visitor.visit_program(self)
+  }
+}
+
+pub struct BlockNode {
+  pub declarations: Vec<Box<Node>>,
+  pub compound_statement: Box<Node>,
+}
+
+impl BlockNode {
+  pub fn new(declarations: Vec<Box<Node>>, compound_statement: Box<Node>) -> Self {
+    BlockNode {
+      declarations,
+      compound_statement,
+    }
+  }
+}
+
+impl Node for BlockNode {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
+    visitor.visit_block(self)
+  }
+}
+
+pub struct DeclarationNode {
+  var_node: Box<Node>,
+  type_node: Box<Node>,
+}
+
+impl DeclarationNode {
+  pub fn new(var_node: Box<Node>, type_node: Box<Node>) -> Self {
+    DeclarationNode {
+      var_node,
+      type_node,
+    }
+  }
+}
+
+impl Node for DeclarationNode {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
+    visitor.visit_declaration(self)
+  }
+}
+
+#[derive(Clone)]
+pub struct TypeNode {
+  pub token: Token,
+}
+
+impl TypeNode {
+  pub fn new(token: Token) -> Self {
+    TypeNode { token }
+  }
+}
+
+impl Node for TypeNode {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
+    visitor.visit_type(self)
   }
 }

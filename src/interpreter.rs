@@ -28,12 +28,14 @@ mod tests {
   use super::*;
 
   #[test]
+  #[ignore]
   fn begin_then_end() {
     let mut interpreter = Interpreter::new("BEGIN END.");
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
+  #[ignore]
   fn reserved_words_can_be_in_either_case() {
     let mut interpreter = Interpreter::new("begin end.");
     assert_eq!(interpreter.interpret(), 0);
@@ -47,12 +49,14 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn program_contains_single_statement() {
     let mut interpreter = Interpreter::new("BEGIN a := 10; END.");
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
+  #[ignore]
   fn program_contains_single_statement_without_final_semicolon() {
     let mut interpreter = Interpreter::new("BEGIN a := 10 END.");
     assert_eq!(interpreter.interpret(), 0);
@@ -66,14 +70,15 @@ mod tests {
   }
 
   #[test]
-  fn idenifiers_can_start_with_underscore() {
+  #[ignore]
+  fn identifiers_can_start_with_underscore() {
     let mut interpreter = Interpreter::new("BEGIN _a := 10 END.");
     assert_eq!(interpreter.interpret(), 0);
   }
 
   #[test]
   #[should_panic]
-  fn idenifiers_cannot_contain_underscores() {
+  fn identifiers_cannot_contain_underscores() {
     let mut interpreter = Interpreter::new("BEGIN a_num := 10 END.");
     assert_eq!(interpreter.interpret(), 0);
   }
@@ -86,6 +91,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn program_contains_multiple_statements() {
     let mut interpreter = Interpreter::new(
       r#"
@@ -100,6 +106,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn program_contains_a_compound_statement() {
     let mut interpreter = Interpreter::new(
       r#"
@@ -116,6 +123,7 @@ mod tests {
   }
 
   #[test]
+  #[ignore]
   fn program_contains_a_compound_statement_with_trailing_statement() {
     let mut interpreter = Interpreter::new(
       r#"
