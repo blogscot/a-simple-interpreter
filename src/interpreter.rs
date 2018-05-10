@@ -1,4 +1,5 @@
 use node::Node;
+use number::Number;
 use parser::Parser;
 use visitor::{Evaluator, NodeVisitor};
 
@@ -12,13 +13,13 @@ impl Interpreter {
     let root_node = parser.parse();
     Interpreter { root_node }
   }
-  pub fn interpret(&mut self) -> i32 {
+  pub fn interpret(&mut self) -> Number {
     self.accept(&mut Evaluator::new())
   }
 }
 
 impl Node for Interpreter {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> i32 {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
     self.root_node.accept(visitor)
   }
 }
@@ -26,6 +27,7 @@ impl Node for Interpreter {
 #[cfg(test)]
 mod tests {
   use super::*;
+  use number::Number::Undefined;
 
   #[test]
   fn begin_then_end() {
@@ -35,7 +37,7 @@ mod tests {
     BEGIN 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -46,7 +48,7 @@ mod tests {
     begin 
     end."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -57,7 +59,7 @@ mod tests {
     PROGRAM empty; 
     BEGIN END"#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -70,7 +72,7 @@ mod tests {
       a := 10; 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -83,7 +85,7 @@ mod tests {
       a := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -97,7 +99,7 @@ mod tests {
       a = 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -111,7 +113,7 @@ mod tests {
       a :== 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -124,7 +126,7 @@ mod tests {
       _a := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -138,7 +140,7 @@ mod tests {
       an_int := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -153,7 +155,7 @@ mod tests {
       result := a DIV b - 1 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -171,7 +173,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -184,13 +186,13 @@ mod tests {
       Begin
         a := 10 * 4;
         b := -19 + 1;
-        result := a div b - 1
+        result := a / b - 1
       End;
-      c := 22 DIV 3;
+      c := 22 / 7;
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
   #[test]
@@ -210,7 +212,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), 0);
+    assert_eq!(interpreter.interpret(), Undefined);
   }
 
 }

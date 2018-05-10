@@ -4,9 +4,12 @@ extern crate mopa;
 #[macro_use]
 extern crate lazy_static;
 
+extern crate regex;
+
 mod interpreter;
 mod lexer;
 mod node;
+mod number;
 mod parser;
 mod token;
 mod visitor;
@@ -20,5 +23,5 @@ fn main() {
   END.
   "#,
   );
-  println!("{}", interpreter.interpret());
+  println!("{:?}", interpreter.interpret());
 }

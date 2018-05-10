@@ -1,10 +1,13 @@
-use node::*;
-use token::Token::*;
-
 use std::collections::HashMap;
 
+use node::*;
+use number::Number;
+use number::Number::Undefined;
+use std::str::FromStr;
+use token::Token::*;
+
 pub trait NodeVisitor {
-  fn visit(&mut self, node: &Box<Node>) -> i32 {
+  fn visit(&mut self, node: &Box<Node>) -> Number {
     if node.is::<ProgramNode>() {
       self.visit_program(node.downcast_ref().unwrap())
     } else if node.is::<BlockNode>() {
@@ -33,24 +36,24 @@ pub trait NodeVisitor {
       panic!("Unknown node found: {}", to_string(node));
     }
   }
-  fn visit_program(&mut self, node: &ProgramNode) -> i32;
-  fn visit_block(&mut self, node: &BlockNode) -> i32;
-  fn visit_declaration(&mut self, node: &DeclarationNode) -> i32;
-  fn visit_type(&mut self, node: &TypeNode) -> i32;
-  fn visit_integer(&mut self, node: &IntegerNumNode) -> i32;
-  fn visit_real(&mut self, node: &RealNumNode) -> i32;
-  fn visit_binop(&mut self, node: &BinOpNode) -> i32;
-  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> i32;
-  fn visit_compound(&mut self, node: &CompoundNode) -> i32;
-  fn visit_assign(&mut self, node: &AssignNode) -> i32;
-  fn visit_var(&mut self, node: &VarNode) -> i32;
-  fn visit_noop(&mut self, _node: &NoOpNode) -> i32 {
-    0
+  fn visit_program(&mut self, node: &ProgramNode) -> Number;
+  fn visit_block(&mut self, node: &BlockNode) -> Number;
+  fn visit_declaration(&mut self, node: &DeclarationNode) -> Number;
+  fn visit_type(&mut self, node: &TypeNode) -> Number;
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> Number;
+  fn visit_real(&mut self, node: &RealNumNode) -> Number;
+  fn visit_binop(&mut self, node: &BinOpNode) -> Number;
+  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Number;
+  fn visit_compound(&mut self, node: &CompoundNode) -> Number;
+  fn visit_assign(&mut self, node: &AssignNode) -> Number;
+  fn visit_var(&mut self, node: &VarNode) -> Number;
+  fn visit_noop(&mut self, _node: &NoOpNode) -> Number {
+    Undefined
   }
 }
 
 pub struct Evaluator {
-  global_scope: HashMap<String, i32>,
+  global_scope: HashMap<String, String>,
 }
 
 impl Evaluator {
@@ -62,29 +65,29 @@ impl Evaluator {
 }
 
 impl NodeVisitor for Evaluator {
-  fn visit_program(&mut self, node: &ProgramNode) -> i32 {
+  fn visit_program(&mut self, node: &ProgramNode) -> Number {
     self.visit(&node.block);
-    0
+    Undefined
   }
-  fn visit_block(&mut self, node: &BlockNode) -> i32 {
+  fn visit_block(&mut self, node: &BlockNode) -> Number {
     for declaration in &node.declarations {
       self.visit(&declaration);
     }
     self.visit(&node.compound_statement)
   }
-  fn visit_declaration(&mut self, _node: &DeclarationNode) -> i32 {
-    0
+  fn visit_declaration(&mut self, _node: &DeclarationNode) -> Number {
+    Undefined
   }
-  fn visit_type(&mut self, _node: &TypeNode) -> i32 {
-    0
+  fn visit_type(&mut self, _node: &TypeNode) -> Number {
+    Undefined
   }
-  fn visit_integer(&mut self, node: &IntegerNumNode) -> i32 {
-    node.value
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> Number {
+    Number::from(node.value)
   }
-  fn visit_real(&mut self, node: &RealNumNode) -> i32 {
-    node.value as i32
+  fn visit_real(&mut self, node: &RealNumNode) -> Number {
+    Number::from(node.value)
   }
-  fn visit_binop(&mut self, node: &BinOpNode) -> i32 {
+  fn visit_binop(&mut self, node: &BinOpNode) -> Number {
     let BinOpNode {
       left,
       right,
@@ -98,10 +101,11 @@ impl NodeVisitor for Evaluator {
       Multiply => lhs * rhs,
       Minus => lhs - rhs,
       IntegerDivision => lhs / rhs,
+      RealDivision => lhs / rhs,
       _ => panic!("Unknown operator found: {}", operator),
     }
   }
-  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> i32 {
+  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Number {
     let UnaryOpNode { operator, expr } = node;
     match operator {
       Plus => self.visit(expr),
@@ -109,29 +113,31 @@ impl NodeVisitor for Evaluator {
       _ => panic!("Unexpected Unary Operator found: {}", operator),
     }
   }
-  fn visit_compound(&mut self, node: &CompoundNode) -> i32 {
+  fn visit_compound(&mut self, node: &CompoundNode) -> Number {
     for child in &node.children {
       self.visit(child);
     }
-    0
+    Undefined
   }
-  fn visit_assign(&mut self, node: &AssignNode) -> i32 {
+  fn visit_assign(&mut self, node: &AssignNode) -> Number {
     if node.identifier.is::<VarNode>() {
       let var_node: &VarNode = node.identifier.downcast_ref().unwrap();
       if let Id(name) = &var_node.identifier {
         let value = self.visit(&node.expr);
-        self.global_scope.insert(name.to_string(), value);
+        self
+          .global_scope
+          .insert(name.to_string(), value.to_string());
       }
     }
-    0
+    Undefined
   }
-  fn visit_var(&mut self, node: &VarNode) -> i32 {
+  fn visit_var(&mut self, node: &VarNode) -> Number {
     if let VarNode {
       identifier: Id(name),
     } = node
     {
       match self.global_scope.get(name.as_str()) {
-        Some(value) => *value,
+        Some(value) => Number::from_str(value).unwrap(),
         None => panic!("Variable {} not found", name),
       }
     } else {

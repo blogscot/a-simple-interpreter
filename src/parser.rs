@@ -106,7 +106,7 @@ impl Parser {
     //              Real"
     let current_token = self.get_current_token();
     match current_token {
-      Integer | Real => {
+      IntegerConst(_) | RealConst(_) => {
         self.consume(&current_token);
         Box::new(TypeNode::new(current_token))
       }
