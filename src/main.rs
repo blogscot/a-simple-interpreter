@@ -19,9 +19,9 @@ use interpreter::Interpreter;
 fn main() {
   let mut interpreter = Interpreter::new(
     r#"
-  BEGIN 
-  END.
-  "#,
+    PROGRAM empty;
+    BEGIN 
+    END."#,
   );
   println!("{:?}", interpreter.interpret());
 }
