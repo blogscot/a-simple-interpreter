@@ -26,21 +26,19 @@ use self::Number::*;
 fn convert(text: &str) -> Number {
   let re = Regex::new(r"^Int\((?P<int>[-+]?\d+)\)|^Real\((?P<real>[-+]?\d+\.\d*)\)").unwrap();
 
-  for caps in re.captures_iter(text) {
-    let int_as_str = caps.name("int").map_or("", |m| m.as_str());
-    let real_as_str = caps.name("real").map_or("", |m| m.as_str());
+  let cap = re.captures(text).unwrap();
+  let int_as_str = cap.name("int").map_or("", |m| m.as_str());
+  let real_as_str = cap.name("real").map_or("", |m| m.as_str());
 
-    if !int_as_str.is_empty() {
-      let value = int_as_str.parse::<i32>().unwrap();
-      return Number::Int(value);
-    } else if !real_as_str.is_empty() {
-      let value = real_as_str.parse::<f32>().unwrap();
-      return Number::Real(value);
-    } else {
-      return Number::Undefined;
-    }
+  if !int_as_str.is_empty() {
+    let value = int_as_str.parse::<i32>().unwrap();
+    Number::Int(value)
+  } else if !real_as_str.is_empty() {
+    let value = real_as_str.parse::<f32>().unwrap();
+    Number::Real(value)
+  } else {
+    Number::Undefined
   }
-  Number::Undefined
 }
 
 impl FromStr for Number {
