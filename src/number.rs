@@ -16,7 +16,7 @@ enum NumberErrorKind {
 
 #[derive(Debug, PartialEq)]
 pub enum Number {
-  Undefined,
+  Nil,
   Int(i32),
   Real(f32),
 }
@@ -37,7 +37,7 @@ fn convert(text: &str) -> Number {
     let value = real_as_str.parse::<f32>().unwrap();
     Number::Real(value)
   } else {
-    Number::Undefined
+    Number::Nil
   }
 }
 
@@ -51,7 +51,7 @@ impl FromStr for Number {
 impl ToString for Number {
   fn to_string(&self) -> String {
     match self {
-      Number::Undefined => "Undefined".into(),
+      Number::Nil => "Nil".into(),
       Number::Int(value) => format!("Int({})", value),
       Number::Real(value) => format!("Real({})", value),
     }
@@ -63,7 +63,7 @@ impl ops::Neg for Number {
 
   fn neg(self) -> Self {
     match self {
-      Undefined => Undefined,
+      Nil => Nil,
       Int(value) => Int(-value),
       Real(value) => Real(-value),
     }
@@ -74,14 +74,14 @@ impl ops::Add for Number {
   type Output = Number;
   fn add(self, rhs: Number) -> Number {
     match self {
-      Undefined => rhs,
+      Nil => rhs,
       Int(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => Int(left + right),
         Real(right) => panic!("Invalid addition, {} and {}", left, right),
       },
       Real(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => panic!("Invalid addition, {} and {}", left, right),
         Real(right) => Real(left + right),
       },
@@ -93,14 +93,14 @@ impl ops::Mul for Number {
   type Output = Number;
   fn mul(self, rhs: Number) -> Number {
     match self {
-      Undefined => rhs,
+      Nil => rhs,
       Int(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => Int(left * right),
         Real(right) => panic!("Invalid multiplication, {} and {}", left, right),
       },
       Real(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => panic!("Invalid multiplication, {} and {}", left, right),
         Real(right) => Real(left * right),
       },
@@ -112,14 +112,14 @@ impl ops::Sub for Number {
   type Output = Number;
   fn sub(self, rhs: Number) -> Number {
     match self {
-      Undefined => rhs,
+      Nil => rhs,
       Int(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => Int(left - right),
         Real(right) => panic!("Invalid subtraction, {} and {}", left, right),
       },
       Real(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => panic!("Invalid subtraction, {} and {}", left, right),
         Real(right) => Real(left - right),
       },
@@ -131,14 +131,14 @@ impl ops::Div for Number {
   type Output = Number;
   fn div(self, rhs: Number) -> Number {
     match self {
-      Undefined => rhs,
+      Nil => rhs,
       Int(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => Int(left / right),
         Real(right) => panic!("Invalid division, {} and {}", left, right),
       },
       Real(left) => match rhs {
-        Undefined => self,
+        Nil => self,
         Int(right) => panic!("Invalid division, {} and {}", left, right),
         Real(right) => Real(left / right),
       },

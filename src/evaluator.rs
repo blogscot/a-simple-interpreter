@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 use node::*;
 use number::Number;
-use number::Number::Undefined;
+use number::Number::Nil;
 use std::str::FromStr;
 use token::Token::*;
 use visitor::NodeVisitor;
@@ -22,7 +22,7 @@ impl Evaluator {
 impl NodeVisitor for Evaluator {
   fn visit_program(&mut self, node: &ProgramNode) -> Number {
     self.visit(&node.block);
-    Undefined
+    Nil
   }
   fn visit_block(&mut self, node: &BlockNode) -> Number {
     for declaration in &node.declarations {
@@ -31,10 +31,10 @@ impl NodeVisitor for Evaluator {
     self.visit(&node.compound_statement)
   }
   fn visit_declaration(&mut self, _node: &DeclarationNode) -> Number {
-    Undefined
+    Nil
   }
   fn visit_type(&mut self, _node: &TypeNode) -> Number {
-    Undefined
+    Nil
   }
   fn visit_integer(&mut self, node: &IntegerNumNode) -> Number {
     Number::from(node.value)
@@ -72,7 +72,7 @@ impl NodeVisitor for Evaluator {
     for child in &node.children {
       self.visit(child);
     }
-    Undefined
+    Nil
   }
   fn visit_assign(&mut self, node: &AssignNode) -> Number {
     if node.identifier.is::<VarNode>() {
@@ -84,7 +84,7 @@ impl NodeVisitor for Evaluator {
           .insert(name.to_string(), value.to_string());
       }
     }
-    Undefined
+    Nil
   }
   fn visit_var(&mut self, node: &VarNode) -> Number {
     if let VarNode {

@@ -28,7 +28,7 @@ impl Node for Interpreter {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use number::Number::Undefined;
+  use number::Number::Nil;
 
   #[test]
   fn begin_then_end() {
@@ -38,7 +38,7 @@ mod tests {
     BEGIN 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -49,7 +49,7 @@ mod tests {
     begin 
     end."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -60,7 +60,7 @@ mod tests {
     PROGRAM empty; 
     BEGIN END"#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -73,7 +73,7 @@ mod tests {
       a := 10; 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -86,7 +86,7 @@ mod tests {
       a := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -100,7 +100,7 @@ mod tests {
       a = 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -114,7 +114,7 @@ mod tests {
       a :== 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -127,7 +127,7 @@ mod tests {
       _a := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -141,7 +141,7 @@ mod tests {
       an_int := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -156,7 +156,7 @@ mod tests {
       result := a DIV b - 1 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -174,7 +174,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -193,7 +193,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
   #[test]
@@ -213,7 +213,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Undefined);
+    assert_eq!(interpreter.interpret(), Nil);
   }
 
 }

@@ -1,6 +1,6 @@
 use node::*;
 use number::Number;
-use number::Number::Undefined;
+use number::Number::Nil;
 
 pub trait NodeVisitor {
   fn visit(&mut self, node: &Box<Node>) -> Number {
@@ -44,6 +44,6 @@ pub trait NodeVisitor {
   fn visit_assign(&mut self, node: &AssignNode) -> Number;
   fn visit_var(&mut self, node: &VarNode) -> Number;
   fn visit_noop(&mut self, _node: &NoOpNode) -> Number {
-    Undefined
+    Nil
   }
 }
