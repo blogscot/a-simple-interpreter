@@ -1,7 +1,8 @@
+use evaluator::Evaluator;
 use node::Node;
 use number::Number;
 use parser::Parser;
-use visitor::{Evaluator, NodeVisitor};
+use visitor::NodeVisitor;
 
 pub struct Interpreter {
   pub root_node: Box<Node>,
