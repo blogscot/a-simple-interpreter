@@ -8,8 +8,8 @@ lazy_static! {
     let mut reserved_words = HashMap::new();
     reserved_words.insert("PROGRAM", Program);
     reserved_words.insert("VAR", Var);
-    reserved_words.insert("INTEGER", IntegerConst(0));
-    reserved_words.insert("REAL", RealConst(0.0));
+    reserved_words.insert("INTEGER", IntegerConst("".into()));
+    reserved_words.insert("REAL", RealConst("".into()));
     reserved_words.insert("BEGIN", Begin);
     reserved_words.insert("END", End);
     reserved_words.insert("DIV", IntegerDivision);
@@ -94,10 +94,10 @@ impl Lexer {
           digits.push(self.current_char.unwrap());
           self.advance();
         }
-        return Some(RealConst(digits.parse::<f32>().unwrap()));
+        return Some(RealConst(digits));
       }
     }
-    Some(IntegerConst(digits.parse::<i32>().unwrap()))
+    Some(IntegerConst(digits))
   }
   pub fn get_next_token(&mut self) -> Option<Token> {
     while self.current_char != None {
@@ -177,9 +177,9 @@ mod tests {
   fn add_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 + 7".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(4));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("4".into()));
     assert_eq!(lexer.get_next_token().unwrap(), Plus);
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("7".into()));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -187,9 +187,9 @@ mod tests {
   fn multiply_two_single_digit_numbers() {
     let mut lexer = Lexer::new("4 * 7".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(4));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("4".into()));
     assert_eq!(lexer.get_next_token().unwrap(), Multiply);
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("7".into()));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -197,9 +197,9 @@ mod tests {
   fn divide_two_integers() {
     let mut lexer = Lexer::new("14 DIV 7".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(14));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("14".into()));
     assert_eq!(lexer.get_next_token().unwrap(), IntegerDivision);
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("7".into()));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -207,9 +207,9 @@ mod tests {
   fn divide_two_real_numbers() {
     let mut lexer = Lexer::new("14.0 / 7.0".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), RealConst(14.0));
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst("14.0".into()));
     assert_eq!(lexer.get_next_token().unwrap(), RealDivision);
-    assert_eq!(lexer.get_next_token().unwrap(), RealConst(7.0));
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst("7.0".into()));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -217,9 +217,9 @@ mod tests {
   fn multiply_two_real_numbers() {
     let mut lexer = Lexer::new("4.125 * 3.3333".into());
 
-    assert_eq!(lexer.get_next_token().unwrap(), RealConst(4.125));
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst("4.125".into()));
     assert_eq!(lexer.get_next_token().unwrap(), Multiply);
-    assert_eq!(lexer.get_next_token().unwrap(), RealConst(3.3333));
+    assert_eq!(lexer.get_next_token().unwrap(), RealConst("3.3333".into()));
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
 
@@ -228,9 +228,9 @@ mod tests {
     let mut lexer = Lexer::new("(4 - 7)".into());
 
     assert_eq!(lexer.get_next_token().unwrap(), LParen);
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(4));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("4".into()));
     assert_eq!(lexer.get_next_token().unwrap(), Minus);
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(7));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("7".into()));
     assert_eq!(lexer.get_next_token().unwrap(), RParen);
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }
@@ -252,7 +252,7 @@ mod tests {
       Var,
       Id("number".to_string()),
       Colon,
-      IntegerConst(0),
+      IntegerConst("".into()),
       Semi,
       Begin,
       End,
@@ -271,7 +271,7 @@ mod tests {
 
     assert_eq!(lexer.get_next_token().unwrap(), Id("a".to_string()));
     assert_eq!(lexer.get_next_token().unwrap(), Assign);
-    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst(10));
+    assert_eq!(lexer.get_next_token().unwrap(), IntegerConst("10".into()));
     assert_eq!(lexer.get_next_token().unwrap(), Semi);
     assert_eq!(lexer.get_next_token().unwrap(), EOF);
   }

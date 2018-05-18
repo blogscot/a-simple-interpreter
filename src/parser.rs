@@ -78,37 +78,36 @@ impl Parser {
   }
   fn variable_declaration(&mut self) -> Vec<Box<Node>> {
     // "variable_declaration : Id (Comma Id)* Colon type_spec"
-    let mut var_nodes: Vec<Box<Node>> = Vec::new();
+    let mut var_nodes: Vec<VarNode> = Vec::new();
     let mut identifier = self.get_current_token();
     self.consume(&identifier);
 
-    var_nodes.push(Box::new(VarNode::new(identifier)));
+    var_nodes.push(VarNode::new(identifier));
     while self.get_current_token() == Comma {
       self.consume(&Comma);
       identifier = self.get_current_token();
       self.consume(&identifier);
-      var_nodes.push(Box::new(VarNode::new(identifier)));
+      var_nodes.push(VarNode::new(identifier));
     }
 
     self.consume(&Colon);
 
-    let type_node = *self.type_spec();
+    let type_node = self.type_spec();
     let mut var_declarations: Vec<Box<Node>> = vec![];
     for node in var_nodes {
-      let boxed_type_node = Box::new(type_node.clone());
-      let declaration = DeclarationNode::new(node, boxed_type_node);
+      let declaration = DeclarationNode::new(node, type_node.clone());
       var_declarations.push(Box::new(declaration));
     }
     var_declarations
   }
-  fn type_spec(&mut self) -> Box<TypeNode> {
+  fn type_spec(&mut self) -> TypeNode {
     // "type_spec : Integer
     //              Real"
     let current_token = self.get_current_token();
     match current_token {
       IntegerConst(_) | RealConst(_) => {
         self.consume(&current_token);
-        Box::new(TypeNode::new(current_token))
+        TypeNode::new(current_token)
       }
       token => panic!("Unknown token type found {}", token),
     }
@@ -171,25 +170,31 @@ impl Parser {
     //        | Integer
     //        | LParen expr RParen
     //        | variable
-    let current_token = self.get_current_token();
+    let mut current_token = self.get_current_token();
 
-    if current_token == Plus || current_token == Minus {
-      self.consume(&current_token);
-      let node = UnaryOpNode::new(current_token, self.factor());
-      Box::new(node)
-    } else if let IntegerConst(value) = current_token {
-      self.consume(&current_token);
-      Box::new(IntegerNumNode::new(value))
-    } else if let RealConst(value) = current_token {
-      self.consume(&current_token);
-      Box::new(RealNumNode::new(value))
-    } else if let LParen = current_token {
-      self.consume(&current_token);
-      let node = self.expr();
-      self.consume(&RParen);
-      node
-    } else {
-      self.variable()
+    match current_token {
+      Plus | Minus => {
+        self.consume(&current_token);
+        let node = UnaryOpNode::new(current_token, self.factor());
+        Box::new(node)
+      }
+      IntegerConst(value) => {
+        current_token = self.get_current_token();
+        self.consume(&current_token);
+        Box::new(IntegerNumNode::new(value.parse::<i32>().unwrap()))
+      }
+      RealConst(value) => {
+        current_token = self.get_current_token();
+        self.consume(&current_token);
+        Box::new(RealNumNode::new(value.parse::<f32>().unwrap()))
+      }
+      LParen => {
+        self.consume(&current_token);
+        let node = self.expr();
+        self.consume(&RParen);
+        node
+      }
+      _ => self.variable(),
     }
   }
   fn term(&mut self) -> Box<Node> {

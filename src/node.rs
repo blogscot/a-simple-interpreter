@@ -220,12 +220,12 @@ impl Node for BlockNode {
 }
 
 pub struct DeclarationNode {
-  var_node: Box<Node>,
-  type_node: Box<Node>,
+  pub var_node: VarNode,
+  pub type_node: TypeNode,
 }
 
 impl DeclarationNode {
-  pub fn new(var_node: Box<Node>, type_node: Box<Node>) -> Self {
+  pub fn new(var_node: VarNode, type_node: TypeNode) -> Self {
     DeclarationNode {
       var_node,
       type_node,

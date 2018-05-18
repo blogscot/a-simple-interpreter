@@ -1,13 +1,13 @@
 use std::fmt;
 
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Token {
   Program,
   Begin,
   End,
   Var,
-  IntegerConst(i32),
-  RealConst(f32),
+  IntegerConst(String),
+  RealConst(String),
   Id(String),
   Colon,
   Comma,
