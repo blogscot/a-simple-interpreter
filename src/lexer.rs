@@ -8,8 +8,8 @@ lazy_static! {
     let mut reserved_words = HashMap::new();
     reserved_words.insert("PROGRAM", Program);
     reserved_words.insert("VAR", Var);
-    reserved_words.insert("INTEGER", IntegerConst("".into()));
-    reserved_words.insert("REAL", RealConst("".into()));
+    reserved_words.insert("INTEGER", Integer);
+    reserved_words.insert("REAL", Real);
     reserved_words.insert("BEGIN", Begin);
     reserved_words.insert("END", End);
     reserved_words.insert("DIV", IntegerDivision);
@@ -252,7 +252,7 @@ mod tests {
       Var,
       Id("number".to_string()),
       Colon,
-      IntegerConst("".into()),
+      Integer,
       Semi,
       Begin,
       End,
