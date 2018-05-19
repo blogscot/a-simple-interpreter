@@ -12,6 +12,9 @@ mod lexer;
 mod node;
 mod number;
 mod parser;
+mod symbol;
+mod symbol_table;
+mod table_builder;
 mod token;
 mod visitor;
 
@@ -21,7 +24,7 @@ fn main() {
   let mut interpreter = Interpreter::new(
     r#"
     PROGRAM empty;
-    BEGIN 
+    BEGIN
     END."#,
   );
   println!("{:?}", interpreter.interpret());
