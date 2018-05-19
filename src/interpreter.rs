@@ -2,6 +2,7 @@ use evaluator::Evaluator;
 use node::Node;
 use number::Number;
 use parser::Parser;
+use table_builder::TableBuilder;
 use visitor::NodeVisitor;
 
 pub struct Interpreter {
@@ -15,6 +16,7 @@ impl Interpreter {
     Interpreter { root_node }
   }
   pub fn interpret(&mut self) -> Number {
+    self.accept(&mut TableBuilder::new());
     self.accept(&mut Evaluator::new())
   }
 }
