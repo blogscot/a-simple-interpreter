@@ -33,7 +33,10 @@ impl Parser {
     if current_token == *token_type {
       self.current_token = self.lexer.get_next_token();
     } else {
-      panic!(format!("consume: token error: {}", current_token));
+      panic!(format!(
+        "Unexpected token error: expected {}, received {}",
+        token_type, current_token
+      ));
     }
   }
   fn program(&mut self) -> Box<Node> {
@@ -72,6 +75,7 @@ impl Parser {
         declarations.extend(self.variable_declaration());
         current_token = self.get_current_token();
         self.consume(&current_token);
+        current_token = self.get_current_token();
       }
     }
     declarations

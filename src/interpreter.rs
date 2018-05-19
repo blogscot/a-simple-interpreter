@@ -79,6 +79,22 @@ mod tests {
   }
 
   #[test]
+  fn program_contains_integer_and_real_variables() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM single;
+    VAR 
+      a : INTEGER; 
+      b : REAL;
+    BEGIN 
+      a := 10;
+      b := 3.0;
+    END."#,
+    );
+    assert_eq!(interpreter.interpret(), Nil);
+  }
+
+  #[test]
   fn final_statement_does_not_require_semicolon() {
     let mut interpreter = Interpreter::new(
       r#"
