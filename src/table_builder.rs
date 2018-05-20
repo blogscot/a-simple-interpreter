@@ -66,10 +66,21 @@ impl NodeVisitor for TableBuilder {
     }
     Nil
   }
-  fn visit_assign(&mut self, _node: &AssignNode) -> Number {
-    Nil
+  fn visit_assign(&mut self, node: &AssignNode) -> Number {
+    let var_node: &VarNode = node.identifier.downcast_ref().unwrap();
+    if let Id(name) = &var_node.identifier {
+      if self.symbol_table.lookup(&name) == None {
+        panic!("Undeclared variable {} found.", name)
+      }
+    }
+    self.visit(&node.expr)
   }
-  fn visit_var(&mut self, _node: &VarNode) -> Number {
+  fn visit_var(&mut self, node: &VarNode) -> Number {
+    if let Id(name) = &node.identifier {
+      if self.symbol_table.lookup(&name) == None {
+        panic!("Undeclared variable {} found.", name)
+      }
+    }
     Nil
   }
 }
