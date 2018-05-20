@@ -22,7 +22,7 @@ impl SymbolTable {
     self.builtins.insert(name, symbol.clone());
   }
   pub fn get(&self, name: &Token) -> BuiltInSymbol {
-    self.builtins.get(name).unwrap().clone()
+    self.builtins[name].clone()
   }
   pub fn define(&mut self, symbol: Symbol) {
     let key = symbol.clone().name;
@@ -36,8 +36,8 @@ impl SymbolTable {
     }
   }
   fn initialise_builtins(&mut self) {
-    let ref int_type = BuiltInSymbol::build(Token::Integer);
-    let ref real_type = BuiltInSymbol::build(Token::Real);
+    let int_type = &BuiltInSymbol::build(Token::Integer);
+    let real_type = &BuiltInSymbol::build(Token::Real);
     self.set(Token::Integer, int_type);
     self.set(Token::Real, real_type);
   }
@@ -46,11 +46,11 @@ impl SymbolTable {
 impl fmt::Display for SymbolTable {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     println!("Builtins");
-    for (key, val) in self.builtins.iter() {
+    for (key, val) in &self.builtins {
       writeln!(f, "{} -> {}", key, val).unwrap();
     }
     println!("User Defined");
-    for (key, val) in self.symbols.iter() {
+    for (key, val) in &self.symbols {
       writeln!(f, "{} -> {}", key, val).unwrap();
     }
     Ok(())

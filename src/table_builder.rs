@@ -37,7 +37,7 @@ impl NodeVisitor for TableBuilder {
     } = node;
 
     if let Id(name) = identifier {
-      let ref builtin_type = self.symbol_table.get(&token);
+      let builtin_type = &self.symbol_table.get(&token);
       let variable = Symbol::new(name, builtin_type);
       self.symbol_table.define(variable);
     }
