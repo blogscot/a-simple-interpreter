@@ -1,8 +1,7 @@
 use std::collections::HashMap;
 
 use node::*;
-use number::Number;
-use number::Number::Nil;
+use number::{Number, Number::Nil, NumberResult};
 use std::str::FromStr;
 use token::Token::*;
 use visitor::NodeVisitor;
@@ -20,28 +19,28 @@ impl Evaluator {
 }
 
 impl NodeVisitor for Evaluator {
-  fn visit_program(&mut self, node: &ProgramNode) -> Result<Number, String> {
+  fn visit_program(&mut self, node: &ProgramNode) -> NumberResult {
     self.visit(&node.block)
   }
-  fn visit_block(&mut self, node: &BlockNode) -> Result<Number, String> {
+  fn visit_block(&mut self, node: &BlockNode) -> NumberResult {
     for declaration in &node.declarations {
       self.visit(&declaration)?;
     }
     self.visit(&node.compound_statement)
   }
-  fn visit_declaration(&mut self, _node: &DeclarationNode) -> Result<Number, String> {
+  fn visit_declaration(&mut self, _node: &DeclarationNode) -> NumberResult {
     Ok(Nil)
   }
-  fn visit_type(&mut self, _node: &TypeNode) -> Result<Number, String> {
+  fn visit_type(&mut self, _node: &TypeNode) -> NumberResult {
     Ok(Nil)
   }
-  fn visit_integer(&mut self, node: &IntegerNumNode) -> Result<Number, String> {
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> NumberResult {
     Ok(Number::from(node.value))
   }
-  fn visit_real(&mut self, node: &RealNumNode) -> Result<Number, String> {
+  fn visit_real(&mut self, node: &RealNumNode) -> NumberResult {
     Ok(Number::from(node.value))
   }
-  fn visit_binop(&mut self, node: &BinOpNode) -> Result<Number, String> {
+  fn visit_binop(&mut self, node: &BinOpNode) -> NumberResult {
     let BinOpNode {
       left,
       right,
@@ -59,7 +58,7 @@ impl NodeVisitor for Evaluator {
       _ => Err(format!("Unknown operator found: {}", operator)),
     }
   }
-  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Result<Number, String> {
+  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> NumberResult {
     let UnaryOpNode { operator, expr } = node;
     match operator {
       Plus => self.visit(expr),
@@ -67,13 +66,13 @@ impl NodeVisitor for Evaluator {
       _ => Err(format!("Unexpected Unary Operator found: {}", operator)),
     }
   }
-  fn visit_compound(&mut self, node: &CompoundNode) -> Result<Number, String> {
+  fn visit_compound(&mut self, node: &CompoundNode) -> NumberResult {
     for child in &node.children {
       self.visit(child)?;
     }
     Ok(Nil)
   }
-  fn visit_assign(&mut self, node: &AssignNode) -> Result<Number, String> {
+  fn visit_assign(&mut self, node: &AssignNode) -> NumberResult {
     if node.identifier.is::<VarNode>() {
       let var_node: &VarNode = node.identifier.downcast_ref().unwrap();
       if let Id(name) = &var_node.identifier {
@@ -85,7 +84,7 @@ impl NodeVisitor for Evaluator {
     }
     Ok(Nil)
   }
-  fn visit_var(&mut self, node: &VarNode) -> Result<Number, String> {
+  fn visit_var(&mut self, node: &VarNode) -> NumberResult {
     if let VarNode {
       identifier: Id(name),
     } = node

@@ -1,8 +1,6 @@
 use node::*;
-use number::Number;
-use number::Number::Nil;
-use symbol::Symbol;
-use symbol::Symbolize;
+use number::{Number::Nil, NumberResult};
+use symbol::{Symbol, Symbolize};
 use symbol_table::SymbolTable;
 use token::Token::Id;
 use visitor::NodeVisitor;
@@ -20,16 +18,16 @@ impl TableBuilder {
 }
 
 impl NodeVisitor for TableBuilder {
-  fn visit_program(&mut self, node: &ProgramNode) -> Result<Number, String> {
+  fn visit_program(&mut self, node: &ProgramNode) -> NumberResult {
     self.visit(&node.block)
   }
-  fn visit_block(&mut self, node: &BlockNode) -> Result<Number, String> {
+  fn visit_block(&mut self, node: &BlockNode) -> NumberResult {
     for declaration in &node.declarations {
       self.visit(&declaration)?;
     }
     self.visit(&node.compound_statement)
   }
-  fn visit_declaration(&mut self, node: &DeclarationNode) -> Result<Number, String> {
+  fn visit_declaration(&mut self, node: &DeclarationNode) -> NumberResult {
     let DeclarationNode {
       var_node: VarNode { identifier },
       type_node: TypeNode { token },
@@ -42,29 +40,29 @@ impl NodeVisitor for TableBuilder {
     }
     Ok(Nil)
   }
-  fn visit_type(&mut self, _node: &TypeNode) -> Result<Number, String> {
+  fn visit_type(&mut self, _node: &TypeNode) -> NumberResult {
     Ok(Nil)
   }
-  fn visit_integer(&mut self, _node: &IntegerNumNode) -> Result<Number, String> {
+  fn visit_integer(&mut self, _node: &IntegerNumNode) -> NumberResult {
     Ok(Nil)
   }
-  fn visit_real(&mut self, _node: &RealNumNode) -> Result<Number, String> {
+  fn visit_real(&mut self, _node: &RealNumNode) -> NumberResult {
     Ok(Nil)
   }
-  fn visit_binop(&mut self, node: &BinOpNode) -> Result<Number, String> {
+  fn visit_binop(&mut self, node: &BinOpNode) -> NumberResult {
     self.visit(&node.left)?;
     self.visit(&node.right)
   }
-  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Result<Number, String> {
+  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> NumberResult {
     self.visit(&node.expr)
   }
-  fn visit_compound(&mut self, node: &CompoundNode) -> Result<Number, String> {
+  fn visit_compound(&mut self, node: &CompoundNode) -> NumberResult {
     for child in &node.children {
       self.visit(child)?;
     }
     Ok(Nil)
   }
-  fn visit_assign(&mut self, node: &AssignNode) -> Result<Number, String> {
+  fn visit_assign(&mut self, node: &AssignNode) -> NumberResult {
     let var_node: &VarNode = node.identifier.downcast_ref().unwrap();
     if let Id(name) = &var_node.identifier {
       if self.symbol_table.lookup(&name) == None {
@@ -73,7 +71,7 @@ impl NodeVisitor for TableBuilder {
     }
     self.visit(&node.expr)
   }
-  fn visit_var(&mut self, node: &VarNode) -> Result<Number, String> {
+  fn visit_var(&mut self, node: &VarNode) -> NumberResult {
     if let Id(name) = &node.identifier {
       if self.symbol_table.lookup(&name) == None {
         return Err(format!("Undeclared variable {} found.", name));

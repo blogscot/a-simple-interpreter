@@ -1,9 +1,8 @@
 use node::*;
-use number::Number;
-use number::Number::Nil;
+use number::{Number::Nil, NumberResult};
 
 pub trait NodeVisitor {
-  fn visit(&mut self, node: &Box<Node>) -> Result<Number, String> {
+  fn visit(&mut self, node: &Box<Node>) -> NumberResult {
     if node.is::<ProgramNode>() {
       self.visit_program(node.downcast_ref().unwrap())
     } else if node.is::<BlockNode>() {
@@ -32,18 +31,18 @@ pub trait NodeVisitor {
       panic!("Unknown node found: {}", to_string(node));
     }
   }
-  fn visit_program(&mut self, node: &ProgramNode) -> Result<Number, String>;
-  fn visit_block(&mut self, node: &BlockNode) -> Result<Number, String>;
-  fn visit_declaration(&mut self, node: &DeclarationNode) -> Result<Number, String>;
-  fn visit_type(&mut self, node: &TypeNode) -> Result<Number, String>;
-  fn visit_integer(&mut self, node: &IntegerNumNode) -> Result<Number, String>;
-  fn visit_real(&mut self, node: &RealNumNode) -> Result<Number, String>;
-  fn visit_binop(&mut self, node: &BinOpNode) -> Result<Number, String>;
-  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Result<Number, String>;
-  fn visit_compound(&mut self, node: &CompoundNode) -> Result<Number, String>;
-  fn visit_assign(&mut self, node: &AssignNode) -> Result<Number, String>;
-  fn visit_var(&mut self, node: &VarNode) -> Result<Number, String>;
-  fn visit_noop(&mut self, _node: &NoOpNode) -> Result<Number, String> {
+  fn visit_program(&mut self, node: &ProgramNode) -> NumberResult;
+  fn visit_block(&mut self, node: &BlockNode) -> NumberResult;
+  fn visit_declaration(&mut self, node: &DeclarationNode) -> NumberResult;
+  fn visit_type(&mut self, node: &TypeNode) -> NumberResult;
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> NumberResult;
+  fn visit_real(&mut self, node: &RealNumNode) -> NumberResult;
+  fn visit_binop(&mut self, node: &BinOpNode) -> NumberResult;
+  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> NumberResult;
+  fn visit_compound(&mut self, node: &CompoundNode) -> NumberResult;
+  fn visit_assign(&mut self, node: &AssignNode) -> NumberResult;
+  fn visit_var(&mut self, node: &VarNode) -> NumberResult;
+  fn visit_noop(&mut self, _node: &NoOpNode) -> NumberResult {
     Ok(Nil)
   }
 }

@@ -1,6 +1,6 @@
 use evaluator::Evaluator;
 use node::Node;
-use number::Number;
+use number::NumberResult;
 use parser::Parser;
 use table_builder::TableBuilder;
 use visitor::NodeVisitor;
@@ -15,14 +15,14 @@ impl Interpreter {
     let root_node = parser.parse();
     Interpreter { root_node }
   }
-  pub fn interpret(&mut self) -> Result<Number, String> {
+  pub fn interpret(&mut self) -> NumberResult {
     self.accept(&mut TableBuilder::new())?;
     self.accept(&mut Evaluator::new())
   }
 }
 
 impl Node for Interpreter {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> NumberResult {
     self.root_node.accept(visitor)
   }
 }

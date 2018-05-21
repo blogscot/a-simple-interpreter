@@ -21,6 +21,8 @@ pub enum Number {
   Real(f32),
 }
 
+pub type NumberResult = Result<Number, String>;
+
 use self::Number::*;
 
 fn convert(text: &str) -> Number {
