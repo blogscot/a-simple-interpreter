@@ -91,7 +91,7 @@ impl NodeVisitor for Evaluator {
     {
       match self.global_scope.get(name.as_str()) {
         Some(value) => Ok(Number::from_str(value).unwrap()),
-        None => Err(format!("Possible use of uninitialised variable {}.", name)),
+        None => Err(format!("Possible use of uninitialised variable: {}.", name)),
       }
     } else {
       Err(format!("Invalid identifier found {}", node.identifier))
