@@ -234,4 +234,36 @@ mod tests {
     assert_eq!(interpreter.interpret(), Nil);
   }
 
+  #[test]
+  fn evalutate_addition_and_multiplication() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM addition;
+    VAR
+      a, b   : INTEGER;
+    BEGIN
+      a := 2;
+      b := 10 * a + 10 * 4;
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), Nil);
+  }
+
+  #[test]
+  fn evalutate_multiple_expression_statement() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM statement;
+    VAR
+      a, b   : INTEGER;
+    BEGIN
+      a := 42;
+      b := 100 / a + (10 + a) - -1;
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), Nil);
+  }
+
 }

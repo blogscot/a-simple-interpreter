@@ -222,7 +222,7 @@ impl Parser {
     let mut current_token = self.get_current_token();
     while current_token == Plus || current_token == Minus {
       self.consume(&current_token);
-      node = Box::new(BinOpNode::new(node, self.factor(), current_token));
+      node = Box::new(BinOpNode::new(node, self.term(), current_token));
       current_token = self.get_current_token();
     }
     node
