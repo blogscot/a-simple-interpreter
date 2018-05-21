@@ -15,14 +15,14 @@ impl Interpreter {
     let root_node = parser.parse();
     Interpreter { root_node }
   }
-  pub fn interpret(&mut self) -> Number {
-    self.accept(&mut TableBuilder::new());
+  pub fn interpret(&mut self) -> Result<Number, String> {
+    self.accept(&mut TableBuilder::new())?;
     self.accept(&mut Evaluator::new())
   }
 }
 
 impl Node for Interpreter {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     self.root_node.accept(visitor)
   }
 }
@@ -40,7 +40,7 @@ mod tests {
     BEGIN 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -51,7 +51,7 @@ mod tests {
     begin 
     end."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -62,7 +62,7 @@ mod tests {
     PROGRAM empty; 
     BEGIN END"#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -75,7 +75,7 @@ mod tests {
       a := 10; 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -91,7 +91,7 @@ mod tests {
       b := 3.0;
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -104,7 +104,7 @@ mod tests {
       a := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -118,7 +118,7 @@ mod tests {
       a = 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -132,7 +132,7 @@ mod tests {
       a :== 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -145,7 +145,7 @@ mod tests {
       _a := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -159,7 +159,7 @@ mod tests {
       an_int := 10
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -174,7 +174,7 @@ mod tests {
       result := a DIV b - 1 
     END."#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -192,7 +192,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -211,7 +211,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -231,7 +231,7 @@ mod tests {
     End.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -247,7 +247,7 @@ mod tests {
     END.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
   #[test]
@@ -263,7 +263,7 @@ mod tests {
     END.
     "#,
     );
-    assert_eq!(interpreter.interpret(), Nil);
+    assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
 }

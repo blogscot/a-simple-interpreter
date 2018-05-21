@@ -3,7 +3,7 @@ use number::Number;
 use number::Number::Nil;
 
 pub trait NodeVisitor {
-  fn visit(&mut self, node: &Box<Node>) -> Number {
+  fn visit(&mut self, node: &Box<Node>) -> Result<Number, String> {
     if node.is::<ProgramNode>() {
       self.visit_program(node.downcast_ref().unwrap())
     } else if node.is::<BlockNode>() {
@@ -32,18 +32,18 @@ pub trait NodeVisitor {
       panic!("Unknown node found: {}", to_string(node));
     }
   }
-  fn visit_program(&mut self, node: &ProgramNode) -> Number;
-  fn visit_block(&mut self, node: &BlockNode) -> Number;
-  fn visit_declaration(&mut self, node: &DeclarationNode) -> Number;
-  fn visit_type(&mut self, node: &TypeNode) -> Number;
-  fn visit_integer(&mut self, node: &IntegerNumNode) -> Number;
-  fn visit_real(&mut self, node: &RealNumNode) -> Number;
-  fn visit_binop(&mut self, node: &BinOpNode) -> Number;
-  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Number;
-  fn visit_compound(&mut self, node: &CompoundNode) -> Number;
-  fn visit_assign(&mut self, node: &AssignNode) -> Number;
-  fn visit_var(&mut self, node: &VarNode) -> Number;
-  fn visit_noop(&mut self, _node: &NoOpNode) -> Number {
-    Nil
+  fn visit_program(&mut self, node: &ProgramNode) -> Result<Number, String>;
+  fn visit_block(&mut self, node: &BlockNode) -> Result<Number, String>;
+  fn visit_declaration(&mut self, node: &DeclarationNode) -> Result<Number, String>;
+  fn visit_type(&mut self, node: &TypeNode) -> Result<Number, String>;
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> Result<Number, String>;
+  fn visit_real(&mut self, node: &RealNumNode) -> Result<Number, String>;
+  fn visit_binop(&mut self, node: &BinOpNode) -> Result<Number, String>;
+  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Result<Number, String>;
+  fn visit_compound(&mut self, node: &CompoundNode) -> Result<Number, String>;
+  fn visit_assign(&mut self, node: &AssignNode) -> Result<Number, String>;
+  fn visit_var(&mut self, node: &VarNode) -> Result<Number, String>;
+  fn visit_noop(&mut self, _node: &NoOpNode) -> Result<Number, String> {
+    Ok(Nil)
   }
 }

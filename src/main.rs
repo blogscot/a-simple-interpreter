@@ -47,7 +47,7 @@ fn main() -> Result<(), Box<error::Error>> {
 
   println!("Processing file: {}", filename);
   let mut interpreter = Interpreter::new(source.as_str());
-  if interpreter.interpret() == number::Number::Nil {
+  if interpreter.interpret()? == number::Number::Nil {
     println!("Success!");
   }
   Ok(())

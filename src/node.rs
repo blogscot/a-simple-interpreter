@@ -6,7 +6,7 @@ use visitor::NodeVisitor;
 use mopa;
 
 pub trait Node: mopa::Any {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number;
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String>;
 }
 
 mopafy!(Node);
@@ -23,7 +23,7 @@ impl IntegerNumNode {
 }
 
 impl Node for IntegerNumNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_integer(self)
   }
 }
@@ -40,7 +40,7 @@ impl RealNumNode {
 }
 
 impl Node for RealNumNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_real(self)
   }
 }
@@ -98,7 +98,7 @@ impl BinOpNode {
 }
 
 impl Node for BinOpNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_binop(self)
   }
 }
@@ -115,7 +115,7 @@ impl UnaryOpNode {
 }
 
 impl Node for UnaryOpNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_unaryop(self)
   }
 }
@@ -131,7 +131,7 @@ impl CompoundNode {
 }
 
 impl Node for CompoundNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_compound(self)
   }
 }
@@ -153,7 +153,7 @@ impl AssignNode {
 }
 
 impl Node for AssignNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_assign(self)
   }
 }
@@ -169,7 +169,7 @@ impl VarNode {
 }
 
 impl Node for VarNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_var(self)
   }
 }
@@ -177,7 +177,7 @@ impl Node for VarNode {
 pub struct NoOpNode {}
 
 impl Node for NoOpNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_noop(self)
   }
 }
@@ -194,7 +194,7 @@ impl ProgramNode {
 }
 
 impl Node for ProgramNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_program(self)
   }
 }
@@ -214,7 +214,7 @@ impl BlockNode {
 }
 
 impl Node for BlockNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_block(self)
   }
 }
@@ -234,7 +234,7 @@ impl DeclarationNode {
 }
 
 impl Node for DeclarationNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_declaration(self)
   }
 }
@@ -251,7 +251,7 @@ impl TypeNode {
 }
 
 impl Node for TypeNode {
-  fn accept(&mut self, visitor: &mut NodeVisitor) -> Number {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> Result<Number, String> {
     visitor.visit_type(self)
   }
 }

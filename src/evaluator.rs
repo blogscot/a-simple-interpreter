@@ -20,29 +20,28 @@ impl Evaluator {
 }
 
 impl NodeVisitor for Evaluator {
-  fn visit_program(&mut self, node: &ProgramNode) -> Number {
-    self.visit(&node.block);
-    Nil
+  fn visit_program(&mut self, node: &ProgramNode) -> Result<Number, String> {
+    self.visit(&node.block)
   }
-  fn visit_block(&mut self, node: &BlockNode) -> Number {
+  fn visit_block(&mut self, node: &BlockNode) -> Result<Number, String> {
     for declaration in &node.declarations {
-      self.visit(&declaration);
+      self.visit(&declaration)?;
     }
     self.visit(&node.compound_statement)
   }
-  fn visit_declaration(&mut self, _node: &DeclarationNode) -> Number {
-    Nil
+  fn visit_declaration(&mut self, _node: &DeclarationNode) -> Result<Number, String> {
+    Ok(Nil)
   }
-  fn visit_type(&mut self, _node: &TypeNode) -> Number {
-    Nil
+  fn visit_type(&mut self, _node: &TypeNode) -> Result<Number, String> {
+    Ok(Nil)
   }
-  fn visit_integer(&mut self, node: &IntegerNumNode) -> Number {
-    Number::from(node.value)
+  fn visit_integer(&mut self, node: &IntegerNumNode) -> Result<Number, String> {
+    Ok(Number::from(node.value))
   }
-  fn visit_real(&mut self, node: &RealNumNode) -> Number {
-    Number::from(node.value)
+  fn visit_real(&mut self, node: &RealNumNode) -> Result<Number, String> {
+    Ok(Number::from(node.value))
   }
-  fn visit_binop(&mut self, node: &BinOpNode) -> Number {
+  fn visit_binop(&mut self, node: &BinOpNode) -> Result<Number, String> {
     let BinOpNode {
       left,
       right,
@@ -52,51 +51,51 @@ impl NodeVisitor for Evaluator {
     let lhs = self.visit(left);
     let rhs = self.visit(right);
     match operator {
-      Plus => lhs + rhs,
-      Multiply => lhs * rhs,
-      Minus => lhs - rhs,
-      IntegerDivision => lhs / rhs,
-      RealDivision => lhs / rhs,
-      _ => panic!("Unknown operator found: {}", operator),
+      Plus => Ok(lhs? + rhs?),
+      Multiply => Ok(lhs? * rhs?),
+      Minus => Ok(lhs? - rhs?),
+      IntegerDivision => Ok(lhs? / rhs?),
+      RealDivision => Ok(lhs? / rhs?),
+      _ => Err(format!("Unknown operator found: {}", operator)),
     }
   }
-  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Number {
+  fn visit_unaryop(&mut self, node: &UnaryOpNode) -> Result<Number, String> {
     let UnaryOpNode { operator, expr } = node;
     match operator {
       Plus => self.visit(expr),
-      Minus => -self.visit(expr),
-      _ => panic!("Unexpected Unary Operator found: {}", operator),
+      Minus => Ok(-self.visit(expr)?),
+      _ => Err(format!("Unexpected Unary Operator found: {}", operator)),
     }
   }
-  fn visit_compound(&mut self, node: &CompoundNode) -> Number {
+  fn visit_compound(&mut self, node: &CompoundNode) -> Result<Number, String> {
     for child in &node.children {
-      self.visit(child);
+      self.visit(child)?;
     }
-    Nil
+    Ok(Nil)
   }
-  fn visit_assign(&mut self, node: &AssignNode) -> Number {
+  fn visit_assign(&mut self, node: &AssignNode) -> Result<Number, String> {
     if node.identifier.is::<VarNode>() {
       let var_node: &VarNode = node.identifier.downcast_ref().unwrap();
       if let Id(name) = &var_node.identifier {
         let value = self.visit(&node.expr);
         self
           .global_scope
-          .insert(name.to_string(), value.to_string());
+          .insert(name.to_string(), value?.to_string());
       }
     }
-    Nil
+    Ok(Nil)
   }
-  fn visit_var(&mut self, node: &VarNode) -> Number {
+  fn visit_var(&mut self, node: &VarNode) -> Result<Number, String> {
     if let VarNode {
       identifier: Id(name),
     } = node
     {
       match self.global_scope.get(name.as_str()) {
-        Some(value) => Number::from_str(value).unwrap(),
-        None => panic!("Possible use of uninitialised variable {}.", name),
+        Some(value) => Ok(Number::from_str(value).unwrap()),
+        None => Err(format!("Possible use of uninitialised variable {}.", name)),
       }
     } else {
-      panic!("Invalid identifier found {}", node.identifier);
+      Err(format!("Invalid identifier found {}", node.identifier))
     }
   }
 }
