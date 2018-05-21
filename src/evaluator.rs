@@ -93,7 +93,7 @@ impl NodeVisitor for Evaluator {
     {
       match self.global_scope.get(name.as_str()) {
         Some(value) => Number::from_str(value).unwrap(),
-        None => panic!("Variable {} not found", name),
+        None => panic!("Possible use of uninitialised variable {}.", name),
       }
     } else {
       panic!("Invalid identifier found {}", node.identifier);
