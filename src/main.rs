@@ -38,7 +38,7 @@ fn read_from_file(filename: &str) -> std::io::Result<String> {
 ///  Read and Interpret a Pascal file.
 ///
 /// Use:
-///   ./target/debug/basic-interpreter <filename>
+///   cargo run <filename>
 ///
 fn main() -> Result<(), Box<error::Error>> {
   let args: Vec<String> = env::args().collect();
