@@ -199,6 +199,23 @@ impl Node for ProgramNode {
   }
 }
 
+pub struct ProcedureNode {
+  pub proc_name: Token,
+  pub block: Box<Node>,
+}
+
+impl ProcedureNode {
+  pub fn new(proc_name: Token, block: Box<Node>) -> Self {
+    ProcedureNode { proc_name, block }
+  }
+}
+
+impl Node for ProcedureNode {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> NumberResult {
+    visitor.visit_procedure(self)
+  }
+}
+
 pub struct BlockNode {
   pub declarations: Vec<Box<Node>>,
   pub compound_statement: Box<Node>,

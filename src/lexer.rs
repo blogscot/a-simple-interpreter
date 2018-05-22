@@ -7,6 +7,7 @@ lazy_static! {
   static ref RESERVED_WORDS: HashMap<&'static str, Token> = {
     let mut reserved_words = HashMap::new();
     reserved_words.insert("PROGRAM", Program);
+    reserved_words.insert("PROCEDURE", Procedure);
     reserved_words.insert("VAR", Var);
     reserved_words.insert("INTEGER", Integer);
     reserved_words.insert("REAL", Real);

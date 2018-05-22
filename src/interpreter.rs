@@ -56,7 +56,7 @@ mod tests {
 
   #[test]
   #[should_panic]
-  fn begin_then_end_without_period() {
+  fn should_panic_begin_then_end_without_period() {
     let mut interpreter = Interpreter::new(
       r#"
     PROGRAM empty; 
@@ -109,7 +109,7 @@ mod tests {
 
   #[test]
   #[should_panic]
-  fn assignment_requires_colon() {
+  fn should_panic_assignment_requires_colon() {
     let mut interpreter = Interpreter::new(
       r#"
     PROGRAM RequiresColon;
@@ -123,7 +123,7 @@ mod tests {
 
   #[test]
   #[should_panic]
-  fn assignment_only_has_one_equals_sign() {
+  fn should_panic_assignment_only_has_one_equals_sign() {
     let mut interpreter = Interpreter::new(
       r#"
     PROGRAM EqualSign;
@@ -150,7 +150,7 @@ mod tests {
 
   #[test]
   #[should_panic]
-  fn identifiers_cannot_contain_underscores() {
+  fn should_panic_identifiers_cannot_contain_underscores() {
     let mut interpreter = Interpreter::new(
       r#"
     PROGRAM NoUnderscore;
@@ -216,7 +216,7 @@ mod tests {
 
   #[test]
   #[should_panic]
-  fn program_contains_a_compound_statement_with_trailing_statement_missing_semicolon() {
+  fn should_panic_compound_statement_with_trailing_statement_missing_semicolon() {
     let mut interpreter = Interpreter::new(
       r#"
     Program multiple;
@@ -260,6 +260,60 @@ mod tests {
     BEGIN
       a := 42;
       b := 100 / a + (10 + a) - -1;
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), Ok(Nil));
+  }
+
+  #[test]
+  fn parse_procedure() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM proc;
+    VAR
+      a : INTEGER;
+
+      PROCEDURE P1;
+      VAR
+        a : REAL;
+        k : INTEGER;
+      BEGIN
+      END;
+      
+    BEGIN
+      a := 10;
+    END.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), Ok(Nil));
+  }
+
+  #[test]
+  fn parse_nested_procedure() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    PROGRAM proc;
+    VAR
+      a : INTEGER;
+
+      PROCEDURE P1;
+      VAR
+        a : REAL;
+        k : INTEGER;
+
+        PROCEDURE P2;
+        VAR
+          a, z : INTEGER;
+        BEGIN {P2}
+          z := 777;
+        END;  {P2}
+
+      BEGIN {P1}
+      END; {P1}
+
+    BEGIN
+      a := 10;
     END.
     "#,
     );

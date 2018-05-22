@@ -5,6 +5,8 @@ pub trait NodeVisitor {
   fn visit(&mut self, node: &Box<Node>) -> NumberResult {
     if node.is::<ProgramNode>() {
       self.visit_program(node.downcast_ref().unwrap())
+    } else if node.is::<ProcedureNode>() {
+      self.visit_procedure(node.downcast_ref().unwrap())
     } else if node.is::<BlockNode>() {
       self.visit_block(node.downcast_ref().unwrap())
     } else if node.is::<DeclarationNode>() {
@@ -32,6 +34,7 @@ pub trait NodeVisitor {
     }
   }
   fn visit_program(&mut self, node: &ProgramNode) -> NumberResult;
+  fn visit_procedure(&mut self, node: &ProcedureNode) -> NumberResult;
   fn visit_block(&mut self, node: &BlockNode) -> NumberResult;
   fn visit_declaration(&mut self, node: &DeclarationNode) -> NumberResult;
   fn visit_type(&mut self, node: &TypeNode) -> NumberResult;

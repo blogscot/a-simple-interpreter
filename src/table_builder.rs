@@ -21,6 +21,9 @@ impl NodeVisitor for TableBuilder {
   fn visit_program(&mut self, node: &ProgramNode) -> NumberResult {
     self.visit(&node.block)
   }
+  fn visit_procedure(&mut self, _node: &ProcedureNode) -> NumberResult {
+    Ok(Nil)
+  }
   fn visit_block(&mut self, node: &BlockNode) -> NumberResult {
     for declaration in &node.declarations {
       self.visit(&declaration)?;

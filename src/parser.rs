@@ -65,7 +65,8 @@ impl Parser {
     Box::new(CompoundNode::new(nodes))
   }
   fn declarations(&mut self) -> Vec<Box<Node>> {
-    // "declarations : Var (variable_declaration Semi)+
+    // "declarations : Var (variable_declaration Semi)+ (procedure_declaration)*
+    //               | (procedure_declaration)*
     //               | empty"
     let mut declarations: Vec<Box<Node>> = vec![];
     if self.get_current_token() == Var {
@@ -78,7 +79,19 @@ impl Parser {
         current_token = self.get_current_token();
       }
     }
+    while self.get_current_token() == Procedure {
+      self.consume(&Procedure);
+      declarations.push(self.procedure_declaration());
+      self.consume(&Semi);
+    }
     declarations
+  }
+  fn procedure_declaration(&mut self) -> Box<Node> {
+    let proc_name = self.get_current_token();
+    self.consume(&proc_name);
+    self.consume(&Semi);
+    let block = self.block();
+    Box::new(ProcedureNode::new(proc_name, block))
   }
   fn variable_declaration(&mut self) -> Vec<Box<Node>> {
     // "variable_declaration : Id (Comma Id)* Colon type_spec"

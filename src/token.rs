@@ -3,6 +3,7 @@ use std::fmt;
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Token {
   Program,
+  Procedure,
   Begin,
   End,
   Var,
@@ -30,6 +31,7 @@ impl<'a> fmt::Display for Token {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     let output = match self {
       Token::Program => "PROGRAM".into(),
+      Token::Procedure => "PROCEDURE".into(),
       Token::Begin => "BEGIN".into(),
       Token::End => "END".into(),
       Token::Var => "VAR".into(),
