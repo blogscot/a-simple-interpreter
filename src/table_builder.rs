@@ -37,6 +37,12 @@ impl NodeVisitor for TableBuilder {
     } = node;
 
     if let Id(name) = identifier {
+      if self.symbol_table.lookup(name) != None {
+        return Err(format!(
+          "Found duplicate variable declaration for '{}'!",
+          name
+        ));
+      }
       let builtin_type = &self.symbol_table.get(&token);
       let variable = Symbol::new(name, builtin_type);
       self.symbol_table.define(variable);
