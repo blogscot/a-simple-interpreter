@@ -77,7 +77,7 @@ mod tests {
     symbol_table.define(int_variable);
     let symbol_lookup = symbol_table.lookup("a").unwrap();
 
-    assert_eq!("a: INTEGER", format!("{}", symbol_lookup));
+    assert_eq!("a: INTEGER", symbol_lookup.to_string());
   }
 
   #[test]
@@ -88,6 +88,6 @@ mod tests {
     symbol_table.define(real_variable);
     let symbol_lookup = symbol_table.lookup("b").unwrap();
 
-    assert_eq!("b: REAL", format!("{}", symbol_lookup));
+    assert_eq!("b: REAL", symbol_lookup.to_string());
   }
 }

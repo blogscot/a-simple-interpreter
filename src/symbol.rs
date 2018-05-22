@@ -83,7 +83,7 @@ mod tests {
 
     assert_eq!("a", a.name);
     assert_eq!(Token::Integer, a.kind.name);
-    assert_eq!("a: INTEGER", format!("{}", a))
+    assert_eq!("a: INTEGER", a.to_string())
   }
 
   #[test]
@@ -93,7 +93,7 @@ mod tests {
 
     assert_eq!("b", b.name);
     assert_eq!(Token::Real, b.kind.name);
-    assert_eq!("b: REAL", format!("{}", b))
+    assert_eq!("b: REAL", b.to_string())
   }
 
 }
