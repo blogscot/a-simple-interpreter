@@ -33,10 +33,10 @@ impl Parser {
     if current_token == *token_type {
       self.current_token = self.lexer.get_next_token();
     } else {
-      panic!(format!(
+      panic!(
         "Unexpected token error: expected {}, received {}",
         token_type, current_token
-      ));
+      );
     }
   }
   fn program(&mut self) -> Box<Node> {
