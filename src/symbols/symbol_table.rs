@@ -6,15 +6,22 @@ use symbols::symbol::{BuiltInSymbol, Symbol, Symbolize};
 
 #[derive(Debug, PartialEq)]
 pub struct SymbolTable {
+  scope_name: String,
+  scope_level: u32,
   builtins: HashMap<Token, BuiltInSymbol>,
   symbols: HashMap<String, Symbol>,
 }
 
 impl SymbolTable {
-  pub fn new() -> SymbolTable {
+  pub fn new(scope_name: String, scope_level: u32) -> SymbolTable {
     let builtins: HashMap<Token, BuiltInSymbol> = HashMap::new();
     let symbols: HashMap<String, Symbol> = HashMap::new();
-    let mut symbol_table = SymbolTable { builtins, symbols };
+    let mut symbol_table = SymbolTable {
+      scope_name,
+      scope_level,
+      builtins,
+      symbols,
+    };
     symbol_table.initialise_builtins();
     symbol_table
   }
@@ -45,13 +52,14 @@ impl SymbolTable {
 
 impl fmt::Display for SymbolTable {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-    println!("Builtins");
+    println!("Scope {}, Level {}", &self.scope_name, &self.scope_level);
+    println!("Builtins Types");
     for (key, val) in &self.builtins {
-      writeln!(f, "{} -> {}", key, val).unwrap();
+      writeln!(f, "  {} -> {}", key, val).unwrap();
     }
-    println!("User Defined");
+    println!("User Defined Types");
     for (key, val) in &self.symbols {
-      writeln!(f, "{} -> {}", key, val).unwrap();
+      writeln!(f, "  {} -> {}", key, val).unwrap();
     }
     Ok(())
   }
@@ -63,7 +71,7 @@ mod tests {
   use symbols::symbol::{BuiltInSymbol, Symbol};
 
   fn setup() -> (SymbolTable, BuiltInSymbol, BuiltInSymbol) {
-    let symbol_table = SymbolTable::new();
+    let symbol_table = SymbolTable::new("Global".into(), 1);
     let int_type = symbol_table.get(&Token::Integer);
     let real_type = symbol_table.get(&Token::Real);
     (symbol_table, int_type, real_type)

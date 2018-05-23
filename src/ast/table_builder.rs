@@ -12,14 +12,16 @@ pub struct TableBuilder {
 impl TableBuilder {
   pub fn new() -> Self {
     TableBuilder {
-      symbol_table: SymbolTable::new(),
+      symbol_table: SymbolTable::new("Global".into(), 1),
     }
   }
 }
 
 impl NodeVisitor for TableBuilder {
   fn visit_program(&mut self, node: &ProgramNode) -> NumberResult {
-    self.visit(&node.block)
+    let result = self.visit(&node.block);
+    println!("{}", self.symbol_table);
+    result
   }
   fn visit_procedure(&mut self, _node: &ProcedureNode) -> NumberResult {
     Ok(Nil)
