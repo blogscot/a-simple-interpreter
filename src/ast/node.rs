@@ -201,18 +201,43 @@ impl Node for ProgramNode {
 
 pub struct ProcedureNode {
   pub proc_name: Token,
+  pub params: Vec<Box<Node>>,
   pub block: Box<Node>,
 }
 
 impl ProcedureNode {
-  pub fn new(proc_name: Token, block: Box<Node>) -> Self {
-    ProcedureNode { proc_name, block }
+  pub fn new(proc_name: Token, params: Vec<Box<Node>>, block: Box<Node>) -> Self {
+    ProcedureNode {
+      proc_name,
+      params,
+      block,
+    }
   }
 }
 
 impl Node for ProcedureNode {
   fn accept(&mut self, visitor: &mut NodeVisitor) -> NumberResult {
     visitor.visit_procedure(self)
+  }
+}
+
+pub struct ParameterNode {
+  pub var_node: VarNode,
+  pub type_node: TypeNode,
+}
+
+impl ParameterNode {
+  pub fn new(var_node: VarNode, type_node: TypeNode) -> Self {
+    ParameterNode {
+      var_node,
+      type_node,
+    }
+  }
+}
+
+impl Node for ParameterNode {
+  fn accept(&mut self, visitor: &mut NodeVisitor) -> NumberResult {
+    visitor.visit_parameter(self)
   }
 }
 

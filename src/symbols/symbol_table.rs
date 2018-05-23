@@ -35,7 +35,6 @@ impl SymbolTable {
     let key = symbol.clone().name;
     self.symbols.insert(key, symbol);
   }
-  #[allow(dead_code)]
   pub fn lookup(&self, name: &str) -> Option<Symbol> {
     match self.symbols.get(name) {
       None => None,

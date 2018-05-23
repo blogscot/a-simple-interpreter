@@ -80,18 +80,48 @@ impl Parser {
       }
     }
     while self.get_current_token() == Procedure {
-      self.consume(&Procedure);
       declarations.push(self.procedure_declaration());
-      self.consume(&Semi);
     }
     declarations
   }
   fn procedure_declaration(&mut self) -> Box<Node> {
+    // "procedure_declaration :
+    //    (Procedure Id (LParen formal_parameter_list RParen)? Semi Block Semi)*"
+    self.consume(&Procedure);
     let proc_name = self.get_current_token();
     self.consume(&proc_name);
+    self.consume(&LParen);
+    let params = self.formal_parameter_list();
+    self.consume(&RParen);
     self.consume(&Semi);
     let block = self.block();
-    Box::new(ProcedureNode::new(proc_name, block))
+    self.consume(&Semi);
+    Box::new(ProcedureNode::new(proc_name, params, block))
+  }
+  fn formal_parameter_list(&mut self) -> Vec<Box<Node>> {
+    // "formal_parameter_list : formal_parameters
+    //                        | formal_parameter Semi formal_parameter_list"
+    let mut parameter_nodes: Vec<VarNode> = Vec::new();
+    let mut identifier = self.get_current_token();
+    self.consume(&identifier);
+
+    parameter_nodes.push(VarNode::new(identifier));
+    while self.get_current_token() == Comma {
+      self.consume(&Comma);
+      identifier = self.get_current_token();
+      self.consume(&identifier);
+      parameter_nodes.push(VarNode::new(identifier));
+    }
+
+    self.consume(&Colon);
+
+    let type_node = self.type_spec();
+    let mut parameter_list: Vec<Box<Node>> = vec![];
+    for node in parameter_nodes {
+      let parameter_node = ParameterNode::new(node, type_node.clone());
+      parameter_list.push(Box::new(parameter_node));
+    }
+    parameter_list
   }
   fn variable_declaration(&mut self) -> Vec<Box<Node>> {
     // "variable_declaration : Id (Comma Id)* Colon type_spec"
