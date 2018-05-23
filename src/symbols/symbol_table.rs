@@ -1,8 +1,8 @@
 use std::fmt;
 
+use lexer::token::Token;
 use std::collections::HashMap;
-use symbol::{BuiltInSymbol, Symbol, Symbolize};
-use token::Token;
+use symbols::symbol::{BuiltInSymbol, Symbol, Symbolize};
 
 #[derive(Debug, PartialEq)]
 pub struct SymbolTable {
@@ -60,7 +60,7 @@ impl fmt::Display for SymbolTable {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use symbol::{BuiltInSymbol, Symbol};
+  use symbols::symbol::{BuiltInSymbol, Symbol};
 
   fn setup() -> (SymbolTable, BuiltInSymbol, BuiltInSymbol) {
     let symbol_table = SymbolTable::new();

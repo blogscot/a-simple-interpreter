@@ -6,17 +6,12 @@ extern crate lazy_static;
 
 extern crate regex;
 
-mod evaluator;
+mod ast;
 mod interpreter;
 mod lexer;
-mod node;
-mod number;
 mod parser;
-mod symbol;
-mod symbol_table;
-mod table_builder;
-mod token;
-mod visitor;
+mod symbols;
+mod utils;
 
 use std::env;
 use std::error;
@@ -24,7 +19,7 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 
-use number::Number::Nil;
+use utils::number::Number::Nil;
 
 use interpreter::Interpreter;
 

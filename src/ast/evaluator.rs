@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 
-use node::*;
-use number::{Number, Number::Nil, NumberResult};
+use ast::node::*;
+use ast::visitor::NodeVisitor;
+use lexer::token::Token::*;
 use std::str::FromStr;
-use token::Token::*;
-use visitor::NodeVisitor;
+use utils::number::{Number, Number::Nil, NumberResult};
 
 pub struct Evaluator {
   global_scope: HashMap<String, String>,

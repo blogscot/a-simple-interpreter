@@ -1,7 +1,7 @@
-use number::NumberResult;
+use ast::visitor::NodeVisitor;
+use lexer::token::Token;
 use std::fmt;
-use token::Token;
-use visitor::NodeVisitor;
+use utils::number::NumberResult;
 
 use mopa;
 

@@ -1,8 +1,8 @@
-use token::Token;
-use token::Token::*;
+use lexer::token::Token;
+use lexer::token::Token::*;
 
+use ast::node::*;
 use lexer::Lexer;
-use node::*;
 
 #[derive(Clone)]
 pub struct Parser {

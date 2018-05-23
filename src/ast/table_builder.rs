@@ -1,9 +1,9 @@
-use node::*;
-use number::{Number::Nil, NumberResult};
-use symbol::{Symbol, Symbolize};
-use symbol_table::SymbolTable;
-use token::Token::Id;
-use visitor::NodeVisitor;
+use ast::node::*;
+use ast::visitor::NodeVisitor;
+use lexer::token::Token::Id;
+use symbols::symbol::{Symbol, Symbolize};
+use symbols::symbol_table::SymbolTable;
+use utils::number::{Number::Nil, NumberResult};
 
 pub struct TableBuilder {
   symbol_table: SymbolTable,

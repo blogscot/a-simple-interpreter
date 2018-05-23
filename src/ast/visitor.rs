@@ -1,5 +1,5 @@
-use node::*;
-use number::{Number::Nil, NumberResult};
+use ast::node::*;
+use utils::number::{Number::Nil, NumberResult};
 
 pub trait NodeVisitor {
   fn visit(&mut self, node: &Box<Node>) -> NumberResult {

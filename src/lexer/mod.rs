@@ -1,5 +1,7 @@
-use token::Token;
-use token::Token::*;
+pub mod token;
+
+use self::token::Token;
+use self::token::Token::*;
 
 use std::collections::HashMap;
 

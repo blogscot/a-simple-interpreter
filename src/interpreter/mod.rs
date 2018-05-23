@@ -1,9 +1,8 @@
-use evaluator::Evaluator;
-use node::Node;
-use number::NumberResult;
+use ast::node::Node;
+use ast::visitor::NodeVisitor;
+use ast::{evaluator::Evaluator, table_builder::TableBuilder};
 use parser::Parser;
-use table_builder::TableBuilder;
-use visitor::NodeVisitor;
+use utils::number::NumberResult;
 
 pub struct Interpreter {
   pub root_node: Box<Node>,
@@ -30,7 +29,7 @@ impl Node for Interpreter {
 #[cfg(test)]
 mod tests {
   use super::*;
-  use number::Number::Nil;
+  use utils::number::Number::Nil;
 
   #[test]
   fn begin_then_end() {

@@ -1,5 +1,5 @@
+use lexer::token::Token;
 use std::fmt;
-use token::Token;
 
 pub trait Symbolize {
   fn new(name: &str, kind: &BuiltInSymbol) -> Symbol;
