@@ -40,7 +40,7 @@ impl Parser {
     }
   }
   fn program(&mut self) -> Box<Node> {
-    // "program : Program variable Semi block Period"
+    // program : Program variable Semi block Period
     self.consume(&Program);
     let VarNode { identifier } = *self.variable();
     self.consume(&Semi);
@@ -50,14 +50,14 @@ impl Parser {
     Box::new(node)
   }
   fn block(&mut self) -> Box<Node> {
-    // "block : declarations compound_statement"
+    // block : declarations compound_statement
     let declarations = self.declarations();
     let compound_statement = self.compound_statement();
     let node = BlockNode::new(declarations, compound_statement);
     Box::new(node)
   }
   fn compound_statement(&mut self) -> Box<Node> {
-    // "compound_statement : Begin statement_list End"
+    // compound_statement : Begin statement_list End
     self.consume(&Begin);
     let nodes = self.statement_list();
     self.consume(&End);
@@ -65,9 +65,9 @@ impl Parser {
     Box::new(CompoundNode::new(nodes))
   }
   fn declarations(&mut self) -> Vec<Box<Node>> {
-    // "declarations : Var (variable_declaration Semi)+ (procedure_declaration)*
-    //               | (procedure_declaration)*
-    //               | empty"
+    // declarations : Var (variable_declaration Semi)+ (procedure_declaration)*
+    //              | (procedure_declaration)*
+    //              | empty
     let mut declarations: Vec<Box<Node>> = vec![];
     if self.get_current_token() == Var {
       self.consume(&Var);
@@ -85,22 +85,37 @@ impl Parser {
     declarations
   }
   fn procedure_declaration(&mut self) -> Box<Node> {
-    // "procedure_declaration :
-    //    (Procedure Id (LParen formal_parameter_list RParen)? Semi Block Semi)*"
+    // procedure_declaration :
+    //    (Procedure Id (LParen formal_parameter_list RParen)? Semi Block Semi)*
+    let mut params: Vec<Box<Node>> = vec![];
+
     self.consume(&Procedure);
     let proc_name = self.get_current_token();
     self.consume(&proc_name);
-    self.consume(&LParen);
-    let params = self.formal_parameter_list();
-    self.consume(&RParen);
+    // formal parameters are optional
+    if self.get_current_token() != Semi {
+      self.consume(&LParen);
+      params = self.formal_parameter_list();
+      self.consume(&RParen);
+    }
     self.consume(&Semi);
     let block = self.block();
     self.consume(&Semi);
     Box::new(ProcedureNode::new(proc_name, params, block))
   }
   fn formal_parameter_list(&mut self) -> Vec<Box<Node>> {
-    // "formal_parameter_list : formal_parameters
-    //                        | formal_parameter Semi formal_parameter_list"
+    // formal_parameter_list : formal_parameters
+    //                       | formal_parameter Semi formal_parameter_list
+    let mut parameters = self.formal_parameters();
+
+    while self.get_current_token() == Semi {
+      self.consume(&Semi);
+      parameters.extend(self.formal_parameters());
+    }
+    parameters
+  }
+  fn formal_parameters(&mut self) -> Vec<Box<Node>> {
+    // formal_parameters : Id (Comma Id)* Colon type_spec
     let mut parameter_nodes: Vec<VarNode> = Vec::new();
     let mut identifier = self.get_current_token();
     self.consume(&identifier);
@@ -124,7 +139,7 @@ impl Parser {
     parameter_list
   }
   fn variable_declaration(&mut self) -> Vec<Box<Node>> {
-    // "variable_declaration : Id (Comma Id)* Colon type_spec"
+    // variable_declaration : Id (Comma Id)* Colon type_spec
     let mut var_nodes: Vec<VarNode> = Vec::new();
     let mut identifier = self.get_current_token();
     self.consume(&identifier);
@@ -148,8 +163,8 @@ impl Parser {
     var_declarations
   }
   fn type_spec(&mut self) -> TypeNode {
-    // "type_spec : Integer
-    //              Real"
+    // type_spec : Integer
+    //             Real
     let current_token = self.get_current_token();
     match current_token {
       Integer | Real => {
@@ -179,9 +194,9 @@ impl Parser {
     results
   }
   fn statement(&mut self) -> Box<Node> {
-    // "statement : compound_statement
-    //            | assign_statement
-    //            | empty"
+    // statement : compound_statement
+    //           | assign_statement
+    //           | empty
     match self.get_current_token() {
       Begin => self.compound_statement(),
       Id(_) => self.assignment_statement(),
@@ -189,7 +204,7 @@ impl Parser {
     }
   }
   fn assignment_statement(&mut self) -> Box<Node> {
-    // "assignment_statement : variable Assign expr"
+    // assignment_statement : variable Assign expr
     let left = self.variable();
     let current_token = self.get_current_token();
     self.consume(&Assign);
@@ -198,7 +213,7 @@ impl Parser {
     Box::new(node)
   }
   fn variable(&mut self) -> Box<VarNode> {
-    // "variable : Id"
+    // variable : Id
     let current_token = self.get_current_token();
     if let Id(_) = current_token {
       self.consume(&current_token);

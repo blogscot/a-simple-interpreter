@@ -319,4 +319,46 @@ mod tests {
     assert_eq!(interpreter.interpret(), Ok(Nil));
   }
 
+  #[test]
+  fn interpret_formal_parameter_ints() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    program Main;
+      var x, y: real;
+
+      procedure Alpha(a, b : integer);
+          var y : integer;
+      begin
+          x := a + x + y;
+      end;
+
+    begin
+
+    end.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), Ok(Nil));
+  }
+
+  #[test]
+  fn interpret_multiple_formal_parameters() {
+    let mut interpreter = Interpreter::new(
+      r#"
+    program Main;
+      var x, y: real;
+
+      procedure Alpha(a, b : integer; c : real);
+          var y : integer;
+      begin
+          x := a + x + y;
+      end;
+
+    begin
+
+    end.
+    "#,
+    );
+    assert_eq!(interpreter.interpret(), Ok(Nil));
+  }
+
 }
