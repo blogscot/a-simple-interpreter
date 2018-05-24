@@ -18,7 +18,9 @@
           "kind": "bin"
         }
       },
-      "args": [],
+      "args": [
+        "test.pas"
+      ],
       "cwd": "${workspaceFolder}"
     },
     {
