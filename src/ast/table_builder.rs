@@ -1,8 +1,8 @@
 use ast::node::*;
 use ast::visitor::NodeVisitor;
 use lexer::token::Token::Id;
-use symbols::symbol::Symbol;
-use symbols::symbol_table::SymbolTable;
+use symbols::symbol::Symbol::*;
+use symbols::symbol::SymbolTable;
 use utils::number::{Number::Nil, NumberResult};
 
 pub struct TableBuilder {
@@ -48,9 +48,12 @@ impl NodeVisitor for TableBuilder {
           name
         ));
       }
-      let builtin_type = &self.symbol_table.get(&token);
-      let variable = Symbol::new(name, builtin_type);
-      self.symbol_table.define(variable);
+      if let BuiltInSymbol(builtin) = self.symbol_table.get(&token) {
+        let variable = UserSymbol(name.to_string(), builtin);
+        self.symbol_table.insert(variable);
+      } else {
+        panic!("Invalid builtin type {}", token);
+      }
     }
     Ok(Nil)
   }
