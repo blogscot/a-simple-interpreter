@@ -1,21 +1,13 @@
 use lexer::token::Token;
 use std::fmt;
 
-pub trait Symbolize {
-  fn new(name: &str, kind: &BuiltInSymbol) -> Symbol;
-  fn build(name: Token) -> BuiltInSymbol;
-}
-
 #[derive(Clone, Debug, PartialEq)]
 pub struct BuiltInSymbol {
   pub name: Token,
 }
 
-impl Symbolize for BuiltInSymbol {
-  fn new(_name: &str, _kind: &BuiltInSymbol) -> Symbol {
-    panic!("Error! Use build() to construct built-in types.");
-  }
-  fn build(name: Token) -> BuiltInSymbol {
+impl BuiltInSymbol {
+  pub fn build(name: Token) -> BuiltInSymbol {
     match name {
       Token::Integer | Token::Real => BuiltInSymbol { name },
       _ => panic!("Invalid symbol value found {}", name),
@@ -41,15 +33,12 @@ impl fmt::Display for Symbol {
   }
 }
 
-impl Symbolize for Symbol {
-  fn new(name: &str, kind: &BuiltInSymbol) -> Symbol {
+impl Symbol {
+  pub fn new(name: &str, kind: &BuiltInSymbol) -> Symbol {
     Symbol {
       name: name.to_string(),
       kind: kind.clone(),
     }
-  }
-  fn build(_name: Token) -> BuiltInSymbol {
-    panic!("Error! Only built-in types are constructed using build().");
   }
 }
 

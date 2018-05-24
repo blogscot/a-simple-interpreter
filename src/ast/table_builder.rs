@@ -1,7 +1,7 @@
 use ast::node::*;
 use ast::visitor::NodeVisitor;
 use lexer::token::Token::Id;
-use symbols::symbol::{Symbol, Symbolize};
+use symbols::symbol::Symbol;
 use symbols::symbol_table::SymbolTable;
 use utils::number::{Number::Nil, NumberResult};
 

@@ -2,7 +2,7 @@ use std::fmt;
 
 use lexer::token::Token;
 use std::collections::HashMap;
-use symbols::symbol::{BuiltInSymbol, Symbol, Symbolize};
+use symbols::symbol::{BuiltInSymbol, Symbol};
 
 #[derive(Debug, PartialEq)]
 pub struct SymbolTable {
