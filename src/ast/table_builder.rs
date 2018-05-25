@@ -1,30 +1,60 @@
 use ast::node::*;
 use ast::visitor::NodeVisitor;
 use lexer::token::Token::Id;
-use symbols::symbol::Symbol::*;
-use symbols::symbol::SymbolTable;
+use symbols::symbol::{BuiltIn, Symbol::*, SymbolTable};
 use utils::number::{Number::Nil, NumberResult};
 
+#[derive(Clone)]
 pub struct TableBuilder {
-  symbol_table: SymbolTable,
+  global_scope: SymbolTable,
+  current_scope: SymbolTable,
 }
 
 impl TableBuilder {
   pub fn new() -> Self {
     TableBuilder {
-      symbol_table: SymbolTable::new("Global".into(), 1),
+      global_scope: Default::default(),
+      current_scope: Default::default(),
     }
   }
 }
 
 impl NodeVisitor for TableBuilder {
   fn visit_program(&mut self, node: &ProgramNode) -> NumberResult {
+    let global_scope = SymbolTable::new("Global Scope", 1);
+    self.global_scope = global_scope.clone();
+    self.current_scope = global_scope;
+
     let result = self.visit(&node.block);
-    println!("{}", self.symbol_table);
+
+    println!("{}", self.global_scope);
     result
   }
-  fn visit_procedure(&mut self, _node: &ProcedureNode) -> NumberResult {
-    Ok(Nil)
+  fn visit_procedure(&mut self, node: &ProcedureNode) -> NumberResult {
+    let proc_name = node.proc_name.to_string();
+    let procedure_scope = SymbolTable::new(&proc_name, 2);
+    self.current_scope = procedure_scope;
+
+    let params: Vec<(String, BuiltIn)> = node
+      .params
+      .iter()
+      .map(|boxed_node| boxed_node.downcast_ref().unwrap())
+      .map(|parameter_node| {
+        let ParameterNode {
+          var_node: VarNode { identifier },
+          type_node: TypeNode { token },
+        } = parameter_node;
+        self.current_scope.insert(VarSymbol(
+          identifier.to_string(),
+          BuiltIn::new(token.clone()),
+        ));
+        (identifier.to_string(), BuiltIn::new(token.clone()))
+      })
+      .collect();
+    let _procedure_symbol = ProcedureSymbol(proc_name, params);
+    println!("{}", self.current_scope);
+
+    self.visit(&node.block)
   }
   fn visit_parameter(&mut self, _node: &ParameterNode) -> NumberResult {
     Ok(Nil)
@@ -42,15 +72,15 @@ impl NodeVisitor for TableBuilder {
     } = node;
 
     if let Id(name) = identifier {
-      if self.symbol_table.lookup(name) != None {
+      if self.global_scope.lookup(name) != None {
         return Err(format!(
           "Found duplicate variable declaration for '{}'!",
           name
         ));
       }
-      if let BuiltInSymbol(builtin) = self.symbol_table.get(&token) {
-        let variable = UserSymbol(name.to_string(), builtin);
-        self.symbol_table.insert(variable);
+      if let BuiltInSymbol(builtin) = self.global_scope.get(&token) {
+        let variable = VarSymbol(name.to_string(), builtin);
+        self.global_scope.insert(variable);
       } else {
         panic!("Invalid builtin type {}", token);
       }
@@ -82,7 +112,7 @@ impl NodeVisitor for TableBuilder {
   fn visit_assign(&mut self, node: &AssignNode) -> NumberResult {
     let var_node: &VarNode = node.identifier.downcast_ref().unwrap();
     if let Id(name) = &var_node.identifier {
-      if self.symbol_table.lookup(&name) == None {
+      if self.global_scope.lookup(&name) == None {
         return Err(format!("Undeclared variable {} found.", name));
       }
     }
@@ -90,7 +120,7 @@ impl NodeVisitor for TableBuilder {
   }
   fn visit_var(&mut self, node: &VarNode) -> NumberResult {
     if let Id(name) = &node.identifier {
-      if self.symbol_table.lookup(&name) == None {
+      if self.global_scope.lookup(&name) == None {
         return Err(format!("Undeclared variable {} found.", name));
       }
     }

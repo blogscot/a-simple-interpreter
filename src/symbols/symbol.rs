@@ -17,20 +17,32 @@ impl BuiltIn {
 #[derive(Clone, Debug, PartialEq)]
 pub enum Symbol {
   BuiltInSymbol(BuiltIn),
-  UserSymbol(String, BuiltIn),
-  // ProcedureSymbol(String, Vec<HashMap<String, BuiltIn>>),
+  VarSymbol(String, BuiltIn),
+  ProcedureSymbol(String, Vec<(String, BuiltIn)>),
 }
 
 use self::Symbol::*;
 
+#[derive(Clone)]
 pub struct SymbolTable {
   scope_name: String,
   scope_level: u32,
   symbols: HashMap<String, Symbol>,
 }
 
+impl Default for SymbolTable {
+  fn default() -> Self {
+    SymbolTable {
+      scope_name: "".into(),
+      scope_level: 0,
+      symbols: HashMap::new(),
+    }
+  }
+}
+
 impl SymbolTable {
-  pub fn new(scope_name: String, scope_level: u32) -> Self {
+  pub fn new(scope_name: &str, scope_level: u32) -> Self {
+    let scope_name = scope_name.to_string();
     let symbols = HashMap::new();
     let mut symbol_table = SymbolTable {
       scope_name,
@@ -52,7 +64,7 @@ impl SymbolTable {
   }
   // Inserts a user-defined type into the Symbol Table.
   pub fn insert(&mut self, symbol: Symbol) {
-    if let Symbol::UserSymbol(key, _kind) = symbol.clone() {
+    if let Symbol::VarSymbol(key, _kind) = symbol.clone() {
       self.symbols.insert(key, symbol);
     } else {
       panic!(format!("Error, Invalid Symbol! {}", symbol));
@@ -87,7 +99,15 @@ impl fmt::Display for Symbol {
       "{}",
       match self {
         BuiltInSymbol(symbol) => symbol.to_string(),
-        UserSymbol(key, symbol) => format!("{}: {}", key, symbol),
+        VarSymbol(key, symbol) => format!("{}: {}", key, symbol),
+        ProcedureSymbol(procedure_name, params) => {
+          let mut output: String = String::new();
+          for param in params {
+            let (name, kind) = param;
+            output += &format!("{}: {}", name, kind);
+          }
+          format!("{} {{ {} }}", procedure_name, output)
+        }
       }
     )
   }
@@ -96,10 +116,10 @@ impl fmt::Display for Symbol {
 impl fmt::Display for SymbolTable {
   fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
     println!("Symbol Table Info:");
-    println!("Scope {}, Level {}", &self.scope_name, &self.scope_level);
+    println!("Scope: {}, Level: {}", &self.scope_name, &self.scope_level);
 
     for (key, val) in &self.symbols {
-      writeln!(f, "({} => {})", key, val).unwrap();
+      writeln!(f, "{{ {} => {} }}", key, val).unwrap();
     }
     Ok(())
   }
@@ -130,9 +150,9 @@ mod tests {
 
   #[test]
   fn create_integer_variable() {
-    let a = UserSymbol("a".into(), BuiltIn::new(Token::Integer));
+    let a = VarSymbol("a".into(), BuiltIn::new(Token::Integer));
 
-    if let UserSymbol(key, builtin) = a.clone() {
+    if let VarSymbol(key, builtin) = a.clone() {
       assert_eq!("a", key);
       assert_eq!(Token::Integer, builtin.0);
       assert_eq!("a: INTEGER", a.to_string())
@@ -141,9 +161,9 @@ mod tests {
 
   #[test]
   fn create_real_variable() {
-    let a = UserSymbol("a".into(), BuiltIn::new(Token::Real));
+    let a = VarSymbol("a".into(), BuiltIn::new(Token::Real));
 
-    if let UserSymbol(key, builtin) = a.clone() {
+    if let VarSymbol(key, builtin) = a.clone() {
       assert_eq!("a", key);
       assert_eq!(Token::Real, builtin.0);
       assert_eq!("a: REAL", a.to_string())
@@ -155,7 +175,7 @@ mod tests {
     let mut symbol_table = SymbolTable::new("Global".into(), 1);
 
     if let BuiltInSymbol(builtin) = symbol_table.lookup("INTEGER").unwrap() {
-      let int_variable = UserSymbol("a".into(), builtin);
+      let int_variable = VarSymbol("a".into(), builtin);
       symbol_table.insert(int_variable);
       let symbol_lookup = symbol_table.lookup("a").unwrap();
       assert_eq!("a: INTEGER", symbol_lookup.to_string());
@@ -167,7 +187,7 @@ mod tests {
     let mut symbol_table = SymbolTable::new("Global".into(), 1);
 
     if let BuiltInSymbol(builtin) = symbol_table.lookup("REAL").unwrap() {
-      let real_variable = UserSymbol("x".into(), builtin);
+      let real_variable = VarSymbol("x".into(), builtin);
       symbol_table.insert(real_variable);
       let symbol_lookup = symbol_table.lookup("x").unwrap();
       assert_eq!("x: REAL", symbol_lookup.to_string());
