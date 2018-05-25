@@ -39,17 +39,18 @@ impl NodeVisitor for TableBuilder {
       .params
       .iter()
       .map(|boxed_node| boxed_node.downcast_ref().unwrap())
-      .map(|parameter_node| {
-        let ParameterNode {
-          var_node: VarNode { identifier },
-          type_node: TypeNode { token },
-        } = parameter_node;
-        self.current_scope.insert(VarSymbol(
-          identifier.to_string(),
-          BuiltIn::new(token.clone()),
-        ));
-        (identifier.to_string(), BuiltIn::new(token.clone()))
-      })
+      .map(
+        |ParameterNode {
+           var_node: VarNode { identifier },
+           type_node: TypeNode { token },
+         }| {
+          self.current_scope.insert(VarSymbol(
+            identifier.to_string(),
+            BuiltIn::new(token.clone()),
+          ));
+          (identifier.to_string(), BuiltIn::new(token.clone()))
+        },
+      )
       .collect();
     let _procedure_symbol = ProcedureSymbol(proc_name, params);
     println!("{}", self.current_scope);
